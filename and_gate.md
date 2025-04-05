@@ -20,6 +20,8 @@ module and_gate(
 
 endmodule
 
+## 🧪 Testbench: and_gate_tb.v
+
 // and_gate_tb.v
 // Testbench for 2-input AND gate
 
@@ -53,6 +55,8 @@ module and_gate_tb;
     end
 
 endmodule
+
+## ⚙️ Simulation Commands
 
 # Compile the design and testbench
 iverilog -o and_gate.vvp and_gate.v and_gate_tb.v
