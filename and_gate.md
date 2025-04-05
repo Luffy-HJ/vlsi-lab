@@ -19,9 +19,13 @@ module and_gate(
     assign Y = A & B;  // Perform bitwise AND operation
 
 endmodule
+```
 
-## 🧪 Testbench: and_gate_tb.v
+---
 
+## 🧪 Testbench: `and_gate_tb.v`
+
+```verilog
 // and_gate_tb.v
 // Testbench for 2-input AND gate
 
@@ -55,9 +59,13 @@ module and_gate_tb;
     end
 
 endmodule
+```
+
+---
 
 ## ⚙️ Simulation Commands
 
+```bash
 # Compile the design and testbench
 iverilog -o and_gate.vvp and_gate.v and_gate_tb.v
 
@@ -66,6 +74,9 @@ vvp and_gate.vvp
 
 # View the waveform
 gtkwave and_gate.vcd
+```
+
+---
 
 ## 📷 Simulation Result
 
