@@ -67,7 +67,7 @@ endmodule
 
 ---
 
-## ⚙️ Simulation on Commands
+## ⚙️ Simulation Commands
 
 ```bash
 # Compile the Verilog source and testbench into an executable
