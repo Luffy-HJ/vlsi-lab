@@ -84,5 +84,4 @@ gtkwave or_gate.vcd
 
 ## 📷 Simulation Result
 
-![OR gate waveform](https://github.com/Luffy-HJ/vlsi-lab/blob/main/or_wave.png?raw=true)
-
+![OR gate waveform](https://github.com/Luffy-HJ/vlsi-lab/blob/main/or_gate/or_wave.png)
