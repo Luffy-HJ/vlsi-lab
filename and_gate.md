@@ -65,5 +65,4 @@ gtkwave and_gate.vcd
 
 ## 📷 Simulation Result
 
-![AND Gate Waveform](images/and_wave.png)
-
+![AND gate waveform](and_wave.png)
