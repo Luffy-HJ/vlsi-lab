@@ -80,4 +80,4 @@ gtkwave and_gate.vcd
 
 ## 📷 Simulation Result
 
-![AND gate waveform](https://github.com/Luffy-HJ/vlsi-lab/blob/main/and_gate/and_wave.png)
+![AND gate waveform](and_wave.png)
