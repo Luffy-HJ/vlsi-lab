@@ -25,7 +25,7 @@ endmodule
 
 ---
 
-## 🧪 Testbnch
+## 🧪 Testbench
 
 ### `nand_gate_tb.v`
 
