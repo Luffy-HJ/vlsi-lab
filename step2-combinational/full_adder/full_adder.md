@@ -30,7 +30,7 @@ endmodule
 
 ## 🧪 Testbench
 
-### `not_gate_tb.v`
+### `full_adder_tb.v`
 
 ```verilog
 // full_adder_tb.v
