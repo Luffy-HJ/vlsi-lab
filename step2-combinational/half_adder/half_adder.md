@@ -1,8 +1,7 @@
 # 🔘 Half Adder Lab
 
 This lab demonstrates how to implement a half adder in Verilog. A half adder takes two binary inputs and produces a sum and a carry output.
-Sum = A ⊕ B
-Carry = A ⋅ B
+Sum = A ⊕ B, Carry = A ⋅ B
 
 ---
 
