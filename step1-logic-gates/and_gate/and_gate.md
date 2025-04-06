@@ -4,7 +4,9 @@ This lab demonstrates how to implement a simple 2-input AND gate in Verilog, tes
 
 ---
 
-## 📄 Verilog Design: `and_gate.v`
+## 📄 Verilog Design
+
+### `and_gate.v`
 
 ```verilog
 // and_gate.v
@@ -23,7 +25,9 @@ endmodule
 
 ---
 
-## 🧪 Testbench: `and_gate_tb.v`
+## 🧪 Testbench
+
+### `and_gate_tb.v`
 
 ```verilog
 // and_gate_tb.v
