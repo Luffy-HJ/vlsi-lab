@@ -30,7 +30,7 @@ endmodule
 
 ## 🧪 Testbench
 
-### `d_flop_flop_tb.v`
+### `d_flip_flop_tb.v`
 
 ```verilog
 // d_flip_flop_tb.v
