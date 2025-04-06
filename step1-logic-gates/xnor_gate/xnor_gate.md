@@ -1,6 +1,6 @@
 # 🔘 XNOR Gate Lab
 
-This lab demonstrates how to implement a simple 2-input OR gate in Verilog, test it using a testbench, and observe the waveform using GTKWave.
+This lab demonstrates how to implement a simple 2-input XNOR gate in Verilog, test it using a testbench, and observe the waveform using GTKWave.
 
 ---
 
