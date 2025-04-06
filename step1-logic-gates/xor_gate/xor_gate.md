@@ -25,7 +25,7 @@ endmodule
 
 ---
 
-## 🧪 Testbench
+## 🧪 Testbenh
 
 ### `xor_gate_tb.v`
 
@@ -67,7 +67,7 @@ endmodule
 
 ---
 
-## ⚙️ Simulation Commands
+## ⚙️ Simulation on Commands
 
 ```bash
 # Compile the Verilog source and testbench into an executable
@@ -84,4 +84,4 @@ gtkwave xor_gate.vcd
 
 ## 📷 Simulation Result
 
-![OR gate waveform](xor_wave.png)
+![OR gate waveform](or_wave.png)
