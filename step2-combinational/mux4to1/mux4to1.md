@@ -87,4 +87,4 @@ gtkwave mux4to1.vcd
 
 ## 📷 Simulation Result
 
-![Half_adder waveform](mux4to1_wave.png)
+![MUX4to1 waveform](mux4to1_wave.png)
