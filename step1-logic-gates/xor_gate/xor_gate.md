@@ -84,4 +84,4 @@ gtkwave xor_gate.vcd
 
 ## 📷 Simulation Result
 
-![OR gate waveform](or_wave.png)
+![OR gate waveform](xor_wave.png)
