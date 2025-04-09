@@ -44,7 +44,7 @@ endmodule
 
 ## 🧪 Testbench
 
-### `alu_4bit.v`
+### `alu_4bit_tb.v`
 
 ```verilog
 // alu_4bit_tb.v
