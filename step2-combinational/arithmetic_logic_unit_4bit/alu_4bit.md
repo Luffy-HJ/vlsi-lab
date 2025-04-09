@@ -1,6 +1,6 @@
-# 🔘 OR Gate Lab
+# 🔘 4-bit ALU Lab
 
-This lab demonstrates how to implement a simple 2-input OR gate in Verilog, test it using a testbench, and observe the waveform using GTKWave.
+This lab implements a 4-bit ALU in Verilog that supports multiple arithmetic and logical operations based on an opcode. It also includes a testbench to verify its functionality.
 
 ---
 
@@ -44,7 +44,7 @@ endmodule
 
 ## 🧪 Testbench
 
-### `or_gate_tb.v`
+### `alu_4bit.v`
 
 ```verilog
 // alu_4bit_tb.v
