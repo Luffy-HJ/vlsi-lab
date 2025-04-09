@@ -85,3 +85,7 @@ gtkwave and_gate.vcd
 ## 📷 Simulation Result
 
 ![AND gate waveform](and_wave.png)
+
+## 🗺️ Netlist Visualization
+
+![AND gate netlist](and_gate_netlist.png)
