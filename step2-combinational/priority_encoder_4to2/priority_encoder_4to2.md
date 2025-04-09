@@ -95,4 +95,4 @@ gtkwave priority_encoder_4to2.vcd
 
 ## 📷 Simulation Result
 
-![Priority_Encoder_4to2 waveform](priority_encoder_4to2.png)
+![Priority_Encoder_4to2 waveform](priority_encoder_4to2_wave.png)
