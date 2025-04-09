@@ -9,3 +9,4 @@ synth -top and_gate
 # 3. Generate a .dot file (graph representation of the netlist)
 show -format dot -prefix and_gate_netlist
 
+dot -Tpng and_gate_netlist.dot -o and_gate_netlist.png
