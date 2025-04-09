@@ -12,25 +12,20 @@ This lab demonstrates how to implement a 4-bit up/down counter using T Flip-Flop
 
 ```verilog
 // t_flip_flop.v
-// T Flip-Flop Module
+// T Flip-Flop with asynchronous reset
 
 module t_flip_flop (
-    input T,       // Toggle input
-    input CLK,     // Clock input
-    output reg Q   // Output (registered)
+    input clk,
+    input reset,
+    input T,
+    output reg Q
 );
 
-    // Initialize Q to 0
-    initial begin
-        Q = 0;
-    end
-
-    // Toggle behavior on positive edge
-    always @(posedge CLK) begin
-        if (T)
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            Q <= 1'b0;
+        else if (T)
             Q <= ~Q;
-        else
-            Q <= Q;
     end
 
 endmodule
