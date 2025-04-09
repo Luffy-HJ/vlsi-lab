@@ -8,60 +8,6 @@ This lab demonstrates how to implement a 4-bit up/down counter using T Flip-Flop
 
 ## 📄 Verilog Design
 
-### `t_counter.v`
-
-```verilog
-// t_counter.v
-// 4-bit Up/Down Counter using T Flip-Flops
-
-module t_counter (
-    input clk,         // Clock input
-    input reset,       // Asynchronous reset
-    input up_down,     // Up (1) or Down (0) counter control
-    output [3:0] Q     // 4-bit output
-);
-
-    // Internal wires for T Flip-Flops
-    wire t0, t1, t2, t3;
-    wire q0, q1, q2, q3;
-
-    // T Flip-Flop instances
-    t_flip_flop ff0 (
-        .T(t0),
-        .CLK(clk),
-        .Q(q0)
-    );
-
-    t_flip_flop ff1 (
-        .T(t1),
-        .CLK(q0),
-        .Q(q1)
-    );
-
-    t_flip_flop ff2 (
-        .T(t2),
-        .CLK(q1),
-        .Q(q2)
-    );
-
-    t_flip_flop ff3 (
-        .T(t3),
-        .CLK(q2),
-        .Q(q3)
-    );
-
-    // Output assignment
-    assign Q = {q3, q2, q1, q0};
-
-    // T inputs for up/down control
-    assign t0 = up_down;
-    assign t1 = q0 ^ up_down;
-    assign t2 = q1 ^ up_down;
-    assign t3 = q2 ^ up_down;
-
-endmodule
-```
-
 ### `t_flip_flop.v`
 
 ```verilog
@@ -90,6 +36,36 @@ module t_flip_flop (
 endmodule
 ```
 
+### `t_counter.v`
+
+```verilog
+// t_counter.v
+// 4-bit Up/Down Counter using T Flip-Flops
+
+module t_counter (
+    input clk,         // Clock
+    input reset,       // Asynchronous Reset
+    input updn,        // Up/Down control: 1 = count up, 0 = count down
+    output [3:0] Q     // 4-bit counter output
+);
+
+    wire T0, T1, T2, T3;
+
+    // T Flip-Flop toggle control logic for Up/Down counting
+    assign T0 = 1'b1;
+    assign T1 = updn ? Q[0]                  : ~Q[0];
+    assign T2 = updn ? Q[0] & Q[1]           : ~Q[0] & ~Q[1];
+    assign T3 = updn ? Q[0] & Q[1] & Q[2]    : ~Q[0] & ~Q[1] & ~Q[2];
+
+    // Instantiate T Flip-Flops
+    t_flip_flop tff0 (.clk(clk), .reset(reset), .T(T0), .Q(Q[0]));
+    t_flip_flop tff1 (.clk(clk), .reset(reset), .T(T1), .Q(Q[1]));
+    t_flip_flop tff2 (.clk(clk), .reset(reset), .T(T2), .Q(Q[2]));
+    t_flip_flop tff3 (.clk(clk), .reset(reset), .T(T3), .Q(Q[3]));
+
+endmodule
+```
+
 ---
 
 ## 🧪 Testbench
@@ -98,7 +74,7 @@ endmodule
 
 ```verilog
 // t_counter_tb.v
-// Testbench for T Flip-Flop Up/Down Counter
+// Testbench for 4-bit Up/Down Counter
 
 `timescale 1ns / 1ps
 
@@ -106,38 +82,39 @@ module t_counter_tb;
 
     reg clk;
     reg reset;
-    reg up_down;
+    reg updn;
     wire [3:0] Q;
 
-    // Instantiate the DUT
-    t_counter uut (
+    // Instantiate the counter
+    t_counter dut (
         .clk(clk),
         .reset(reset),
-        .up_down(up_down),
+        .updn(updn),
         .Q(Q)
     );
 
-    // Clock generation
-    always begin
-        clk = 0; #5;
-        clk = 1; #5;
-    end
+    // Clock generation (10ns period)
+    always #5 clk = ~clk;
 
-    // Test sequence
     initial begin
         $dumpfile("t_counter.vcd");
         $dumpvars(0, t_counter_tb);
 
-        // Initial setup
-        up_down = 1;   // Count up
+        // Init
+        clk = 0;
+        reset = 1;
+        updn = 1;
         #10;
 
-        // Count up for 8 cycles
-        #80;
+        reset = 0;
 
-        // Switch to count down
-        up_down = 0;
-        #80;
+        // Count up for 10 cycles
+        updn = 1;
+        repeat (10) #10;
+
+        // Count down for 10 cycles
+        updn = 0;
+        repeat (10) #10;
 
         $finish;
     end
