@@ -70,13 +70,13 @@ endmodule
 ## ⚙️ Simulation Commands
 
 ```bash
-# Compile the design and testbench
+# Compile the Verilog source and testbench into an executable
 iverilog -o and_gate.vvp and_gate.v and_gate_tb.v
 
-# Run the simulation
+# Run the simulation using the compiled file
 vvp and_gate.vvp
 
-# View the waveform
+# Launch GTKWave to view the waveform from the generated VCD file
 gtkwave and_gate.vcd
 ```
 
