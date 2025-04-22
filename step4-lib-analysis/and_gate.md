@@ -16,12 +16,12 @@ cell ("sky130_fd_sc_hd__and2_1") {
             value : 0.0031700000;
             when : "A&!B";
         }
-        area : 6.2560000000;
-        cell_footprint : "sky130_fd_sc_hd__and2";
-        cell_leakage_power : 0.0026650080;
-        driver_waveform_fall : "ramp";
-        driver_waveform_rise : "ramp";
-        pg_pin ("VGND") {
+        area : 6.2560000000;                             // Cell area in square microns
+        cell_footprint : "sky130_fd_sc_hd__and2";        // Logical cell footprint name for grouping similar cells
+        cell_leakage_power : 0.0026650080;               // Total leakage power of the cell (in microwatts)
+        driver_waveform_fall : "ramp";                   // Defines the shape of the output falling transition
+        driver_waveform_rise : "ramp";                   // Defines the shape of the output rising transition
+        pg_pin ("VGND") {                                // Defines the primary ground pin of the cell
             pg_type : "primary_ground";
             related_bias_pin : "VPB";
             voltage_name : "VGND";
