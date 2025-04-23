@@ -442,7 +442,7 @@ include $(FLOW_HOME)/scripts/variables.mk
     $(foreach line,$(shell $(SCRIPTS_DIR)/defaults.py),$(eval export $(subst __SPACE__, ,$(line))))
 ```
 ---
-### 'defaults.py'
+### `defaults.py`
 ```python
 #############################################################################
 # ⬇️ Inline content from `defaults.py` (for analysis purpose only)      ⬇️ #
