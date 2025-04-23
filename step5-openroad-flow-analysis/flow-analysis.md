@@ -76,12 +76,12 @@
 # DESIGN_CONFIG=./designs/gf180/riscv32i/config.mk
 # DESIGN_CONFIG=./designs/gf180/uart-blocks/config.mk
 
-#DESIGN_CONFIG=./designs/ihp-sg13g2/aes/config.mk
-#DESIGN_CONFIG=./designs/ihp-sg13g2/ibex/config.mk
-#DESIGN_CONFIG=./designs/ihp-sg13g2/gcd/config.mk
-#DESIGN_CONFIG=./designs/ihp-sg13g2/spi/config.mk
-#DESIGN_CONFIG=./designs/ihp-sg13g2/riscv32i/config.mk
-#DESIGN_CONFIG=./designs/ihp-sg13g2/i2c-gpio-expander/config.mk
+# DESIGN_CONFIG=./designs/ihp-sg13g2/aes/config.mk
+# DESIGN_CONFIG=./designs/ihp-sg13g2/ibex/config.mk
+# DESIGN_CONFIG=./designs/ihp-sg13g2/gcd/config.mk
+# DESIGN_CONFIG=./designs/ihp-sg13g2/spi/config.mk
+# DESIGN_CONFIG=./designs/ihp-sg13g2/riscv32i/config.mk
+# DESIGN_CONFIG=./designs/ihp-sg13g2/i2c-gpio-expander/config.mk
 
 # Default design
 DESIGN_CONFIG ?= ./designs/nangate45/gcd/config.mk
@@ -93,7 +93,13 @@ include $(DESIGN_CONFIG)
 #########################################################################
     export DESIGN_NAME = gcd
     export PLATFORM    = nangate45
-    
+
+================================ My Note ================================
+=    VERILOG_FILES is defined before DESIGN_HOME appears,               =
+=    but this works because Make uses *lazy evaluation* (`=`).          =
+=    The value is not resolved until it's actually needed,              =
+=    by which time DESIGN_HOME will have been defined in variables.mk.  =
+=========================================================================
     export VERILOG_FILES = $(DESIGN_HOME)/src/$(DESIGN_NAME)/gcd.v
     export SDC_FILE      = $(DESIGN_HOME)/$(PLATFORM)/$(DESIGN_NAME)/constraint.sdc
     export ABC_AREA      = 1
@@ -109,6 +115,9 @@ include $(DESIGN_CONFIG)
 # ⬆️ End of inline config.mk                                        ⬆️ #
 #########################################################################
 
+================================ My Note ================================
+=    $(dir ...) returns the directory portion of DESIGN_CONFIG          =
+=========================================================================
 export DESIGN_DIR  = $(dir $(DESIGN_CONFIG))
 
 # default value "base" is duplicated from variables.yaml because we need it
