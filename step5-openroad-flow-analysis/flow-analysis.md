@@ -443,9 +443,9 @@ include $(FLOW_HOME)/scripts/variables.mk
     .PHONY: print-%
     # Print any variable, for instance: make print-DIE_AREA
     print-%  : ; @echo "$* = $($*)"
-######################################################################
-# ⬆️ End of inline variables.mk                                  ⬆️ #
-######################################################################
+##########################################################################
+# ⬆️ End of inline variables.mk                                      ⬆️ #
+##########################################################################
 
 define GENERATE_ABSTRACT_RULE
 ifeq ($(wildcard $(3)),)
