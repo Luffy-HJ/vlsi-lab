@@ -256,7 +256,7 @@ include $(FLOW_HOME)/scripts/variables.mk
 =    $(wildcard <path>) returns the path if it exists,                      =
 =    otherwise returns an empty string.                                     =
 =    $(findstring <substring>, <string>) returns the substring if found,    =
-=    otherwise returns an empty string.                                      =
+=    otherwise returns an empty string.                                     =
 =============================================================================
     ifneq ($(PLATFORM_DIR),)
     else ifneq ($(wildcard $(PLATFORM_HOME)/$(PLATFORM)),)
