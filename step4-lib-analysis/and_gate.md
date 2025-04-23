@@ -1,4 +1,4 @@
-```verilog
+```C
 cell ("sky130_fd_sc_hd__and2_1") {
         leakage_power () {
             value : 0.0031719000;                        // Leakage power values for different input conditions (when)
