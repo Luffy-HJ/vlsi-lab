@@ -86,6 +86,7 @@
 # Default design
 DESIGN_CONFIG ?= ./designs/nangate45/gcd/config.mk
 export DESIGN_CONFIG
+
 include $(DESIGN_CONFIG)
 #########################################################################
 # ⬇️ Inline content from `config.mk` (for analysis purpose only)    ⬇️ #
