@@ -21,45 +21,45 @@ cell ("sky130_fd_sc_hd__and2_1") {
         cell_leakage_power : 0.0026650080;               // Total leakage power of the cell (in microwatts)
         driver_waveform_fall : "ramp";                   // Defines the shape of the output falling transition
         driver_waveform_rise : "ramp";                   // Defines the shape of the output rising transition
-        pg_pin ("VGND") {                                // Defines the primary ground pin of the cell
-            pg_type : "primary_ground";
-            related_bias_pin : "VPB";
-            voltage_name : "VGND";
+        pg_pin ("VGND") {
+            pg_type : "primary_ground";                  // Specifies that this pin is the primary ground pin
+            related_bias_pin : "VPB";                    // Indicates the body-bias pin associated with this ground pin
+            voltage_name : "VGND";                       // The name of the voltage rail this pin is connected to
         }
         pg_pin ("VNB") {
-            pg_type : "nwell";
-            physical_connection : "device_layer";
-            voltage_name : "VNB";
+            pg_type : "nwell";                           // Indicates this pin is connected to the n-well region
+            physical_connection : "device_layer";        // Specifies that the connection is to the device layer (not routing metal)
+            voltage_name : "VNB";                        // Name of the associated voltage rail for this pin
         }
         pg_pin ("VPB") {
-            pg_type : "pwell";
-            physical_connection : "device_layer";
-            voltage_name : "VPB";
+            pg_type : "pwell";                           // Indicates this pin is connected to the p-well region
+            physical_connection : "device_layer";        // Specifies that the connection is to the device layer (not routing metal)
+            voltage_name : "VPB";                        // Name of the associated voltage rail for this pin
         }
         pg_pin ("VPWR") {
-            pg_type : "primary_power";
-            related_bias_pin : "VNB";
-            voltage_name : "VPWR";
+            pg_type : "primary_power";                   // Indicates this pin provides the main power supply to the cell
+            related_bias_pin : "VNB";                    // Specifies that VNB is the bias pin related to this power pin
+            voltage_name : "VPWR";                       // Logical name of the voltage rail connected to this power pin
         }
         pin ("A") {
-            capacitance : 0.0014620000;
-            clock : "false";
-            direction : "input";
-            fall_capacitance : 0.0014310000;
+            capacitance : 0.0014620000;                  // Total input pin capacitance
+            clock : "false";                             // Whether this pin is a clock input (false = no)
+            direction : "input";                         // Signal direction of the pin
+            fall_capacitance : 0.0014310000;             // Capacitance for a falling input signal
             internal_power () {
-                fall_power ("power_inputs_1") {
+                fall_power ("power_inputs_1") {          // Input transition times for fall power lookup & Corresponding fall power values
                     index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
                     values("0.0025379000, 0.0025400000, 0.0025448000, 0.0025448000, 0.0025447000, 0.0025445000, 0.0025440000");
                 }
-                rise_power ("power_inputs_1") {
+                rise_power ("power_inputs_1") {          // Input transition times for rise power lookup & Corresponding rise power values
                     index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
                     values("-0.001956100, -0.001957000, -0.001959300, -0.001955200, -0.001945900, -0.001924400, -0.001874800");
                 }
             }
-            max_transition : 1.5000000000;
-            related_ground_pin : "VGND";
-            related_power_pin : "VPWR";
-            rise_capacitance : 0.0014920000;
+            max_transition : 1.5000000000;               // Max allowed input signal transition time
+            related_ground_pin : "VGND";                 // Pin name for ground reference
+            related_power_pin : "VPWR";                  // Pin name for power reference
+            rise_capacitance : 0.0014920000;             // Capacitance for a rising input signal
         }
         pin ("B") {
             capacitance : 0.0014960000;
@@ -82,10 +82,10 @@ cell ("sky130_fd_sc_hd__and2_1") {
             rise_capacitance : 0.0015600000;
         }
         pin ("X") {
-            direction : "output";
-            function : "(A&B)";
-            internal_power () {
-                fall_power ("power_outputs_1") {
+            direction : "output";                        // Defines the direction of the pin, in this case, it's an output pin.
+            function : "(A&B)";                          // Specifies the logical function or expression associated with the pin, in this case, a logical AND between A and B.
+            internal_power () {                          // Represents the internal power consumption of the pin
+                fall_power ("power_outputs_1") {         // Specifies the fall (or output) power consumption during a high-to-low voltage transition
                     index_1("0.0100000000, 0.0230505800, 0.0531329300, 0.1224745000, 0.2823108000, 0.6507428000, 1.5000000000");
                     index_2("0.0005000000, 0.0013054670, 0.0034084860, 0.0088993300, 0.0232355600, 0.0606665000, 0.1583962000");
                     values("0.0085240000, 0.0074664000, 0.0046369000, -0.003676900, -0.026596400, -0.087127000, -0.245422400", \
@@ -96,8 +96,8 @@ cell ("sky130_fd_sc_hd__and2_1") {
                         "0.0088907000, 0.0075031000, 0.0041860000, -0.004514700, -0.027130700, -0.087510900, -0.245699200", \
                         "0.0097210000, 0.0083623000, 0.0048614000, -0.003959300, -0.026952200, -0.087195000, -0.245292000");
                 }
-                related_pin : "A";
-                rise_power ("power_outputs_1") {
+                related_pin : "A";                       // Specifies the input pin used to characterize the power consumption of this output pin.
+                rise_power ("power_outputs_1") {         // Specifies the rise (or output) power consumption during a low-to-high voltage transition
                     index_1("0.0100000000, 0.0230505800, 0.0531329300, 0.1224745000, 0.2823108000, 0.6507428000, 1.5000000000");
                     index_2("0.0005000000, 0.0013054670, 0.0034084860, 0.0088993300, 0.0232355600, 0.0606665000, 0.1583962000");
                     values("0.0094704000, 0.0108522000, 0.0143551000, 0.0232112000, 0.0462251000, 0.1062811000, 0.2614212000", \
@@ -134,13 +134,13 @@ cell ("sky130_fd_sc_hd__and2_1") {
                         "0.0100696000, 0.0112933000, 0.0147459000, 0.0236581000, 0.0468086000, 0.1071174000, 0.2634866000");
                 }
             }
-            max_capacitance : 0.1583960000;
-            max_transition : 1.5104930000;
-            power_down_function : "(!VPWR + VGND)";
-            related_ground_pin : "VGND";
-            related_power_pin : "VPWR";
-            timing () {
-                cell_fall ("del_1_7_7") {
+            max_capacitance : 0.1583960000;              // Maximum load capacitance allowed on this pin
+            max_transition : 1.5104930000;               // Maximum transition time allowed at this output
+            power_down_function : "(!VPWR + VGND)";      // Defines when the pin is powered down
+            related_ground_pin : "VGND";                 // Ground net related to this pin
+            related_power_pin : "VPWR";                  // Power net related to this pin
+            timing () {                                  // Timing arc related to input A → output X
+                cell_fall ("del_1_7_7") {                // Output delay values when input transitions from HIGH to LOW
                     index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
                     index_2("0.0005000000, 0.0013054700, 0.0034084900, 0.0088993300, 0.0232356000, 0.0606665000, 0.1583960000");
                     values("0.1031383000, 0.1090369000, 0.1213519000, 0.1458819000, 0.1983965000, 0.3245319000, 0.6507022000", \
@@ -151,7 +151,7 @@ cell ("sky130_fd_sc_hd__and2_1") {
                         "0.3381809000, 0.3460206000, 0.3619098000, 0.3912823000, 0.4477396000, 0.5756008000, 0.8998989000", \
                         "0.5209776000, 0.5311577000, 0.5518847000, 0.5890423000, 0.6537268000, 0.7846471000, 1.1087463000");
                 }
-                cell_rise ("del_1_7_7") {
+                cell_rise ("del_1_7_7") {                // Output delay values when input transitions from LOW to HIGH
                     index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
                     index_2("0.0005000000, 0.0013054700, 0.0034084900, 0.0088993300, 0.0232356000, 0.0606665000, 0.1583960000");
                     values("0.0794242000, 0.0864667000, 0.1026603000, 0.1403230000, 0.2350631000, 0.4803423000, 1.1196789000", \
@@ -162,7 +162,7 @@ cell ("sky130_fd_sc_hd__and2_1") {
                         "0.1957092000, 0.2050777000, 0.2236305000, 0.2628502000, 0.3577440000, 0.6035356000, 1.2459085000", \
                         "0.2281206000, 0.2408570000, 0.2647271000, 0.3094159000, 0.4035527000, 0.6494337000, 1.2897596000");
                 }
-                fall_transition ("del_1_7_7") {
+                fall_transition ("del_1_7_7") {          // Slope (slew) of output signal when it transitions from HIGH to LOW
                     index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
                     index_2("0.0005000000, 0.0013054700, 0.0034084900, 0.0088993300, 0.0232356000, 0.0606665000, 0.1583960000");
                     values("0.0234153000, 0.0276024000, 0.0374098000, 0.0604597000, 0.1196515000, 0.2827106000, 0.7157019000", \
@@ -174,7 +174,7 @@ cell ("sky130_fd_sc_hd__and2_1") {
                         "0.0565871000, 0.0622415000, 0.0731304000, 0.0952605000, 0.1458810000, 0.2922328000, 0.7139613000");
                 }
                 related_pin : "A";
-                rise_transition ("del_1_7_7") {
+                rise_transition ("del_1_7_7") {          // Slope (slew) of output signal when it transitions from LOW to HIGH
                     index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
                     index_2("0.0005000000, 0.0013054700, 0.0034084900, 0.0088993300, 0.0232356000, 0.0606665000, 0.1583960000");
                     values("0.0273098000, 0.0343713000, 0.0528321000, 0.1021536000, 0.2350815000, 0.5873246000, 1.4968455000", \
@@ -185,8 +185,8 @@ cell ("sky130_fd_sc_hd__and2_1") {
                         "0.0416308000, 0.0483148000, 0.0637518000, 0.1082114000, 0.2369543000, 0.5852857000, 1.5016702000", \
                         "0.0592551000, 0.0662234000, 0.0807632000, 0.1200596000, 0.2402845000, 0.5869897000, 1.4960598000");
                 }
-                timing_sense : "positive_unate";
-                timing_type : "combinational";
+                timing_sense : "positive_unate";         // Indicates how the output timing is affected by the input transition
+                timing_type : "combinational";           // Describes the role of this arc in the cell's operation
             }
             timing () {
                 cell_fall ("del_1_7_7") {
