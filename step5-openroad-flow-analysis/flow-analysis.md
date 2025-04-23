@@ -83,23 +83,30 @@
 # DESIGN_CONFIG=./designs/ihp-sg13g2/riscv32i/config.mk
 # DESIGN_CONFIG=./designs/ihp-sg13g2/i2c-gpio-expander/config.mk
 
+================================== My Note ==================================
+=    Uses the '?=' operator, which assigns a value to the variable          =
+=    only if it hasn't already been defined.                                =
+=    This is called conditional assignment.                                 =
+=    The right-hand side is evaluated immediately                           =
+=    if the assignment happens.                                             =
+=============================================================================
 # Default design
 DESIGN_CONFIG ?= ./designs/nangate45/gcd/config.mk
 export DESIGN_CONFIG
 
 include $(DESIGN_CONFIG)
-#########################################################################
-# ⬇️ Inline content from `config.mk` (for analysis purpose only)    ⬇️ #
-#########################################################################
+#############################################################################
+# ⬇️ Inline content from `config.mk` (for analysis purpose only)        ⬇️ #
+#############################################################################
     export DESIGN_NAME = gcd
     export PLATFORM    = nangate45
 
-================================ My Note ================================
-=    VERILOG_FILES is defined before DESIGN_HOME appears,               =
-=    but this works because Make uses *lazy evaluation* (`=`).          =
-=    The value is not resolved until it's actually needed,              =
-=    by which time DESIGN_HOME will have been defined in variables.mk.  =
-=========================================================================
+================================== My Note ==================================
+=    VERILOG_FILES is defined before DESIGN_HOME appears,                   =
+=    but this works because Make uses *lazy evaluation* (`=`).              =
+=    The value is not resolved until it's actually needed,                  =
+=    by which time DESIGN_HOME will have been defined in variables.mk.      =
+=============================================================================
     export VERILOG_FILES = $(DESIGN_HOME)/src/$(DESIGN_NAME)/gcd.v
     export SDC_FILE      = $(DESIGN_HOME)/$(PLATFORM)/$(DESIGN_NAME)/constraint.sdc
     export ABC_AREA      = 1
@@ -111,13 +118,13 @@ include $(DESIGN_CONFIG)
     export PLACE_DENSITY_LB_ADDON = 0.20
     export TNS_END_PERCENT        = 100
     export REMOVE_CELLS_FOR_EQY   = TAPCELL*
-#########################################################################
-# ⬆️ End of inline config.mk                                        ⬆️ #
-#########################################################################
+#############################################################################
+# ⬆️ End of inline config.mk                                            ⬆️ #
+#############################################################################
 
-================================ My Note ================================
-=    $(dir ...) returns the directory portion of DESIGN_CONFIG          =
-=========================================================================
+================================== My Note ==================================
+=    $(dir ...) returns the directory portion of DESIGN_CONFIG.             =
+=============================================================================
 export DESIGN_DIR  = $(dir $(DESIGN_CONFIG))
 
 # default value "base" is duplicated from variables.yaml because we need it
@@ -125,9 +132,21 @@ export DESIGN_DIR  = $(dir $(DESIGN_CONFIG))
 # ORFS Makefile.
 export FLOW_VARIANT?=base
 # BLOCKS is a ORFS make flow specific feature.
+
+================================== My Note ==================================
+=    run this block only if BLOCKS is not empty.                            =
+=============================================================================
 ifneq ($(BLOCKS),)
   # Normally this comes from variables.yaml, but we need it here to set up these variables
   # which are part of the DESIGN_CONFIG. BLOCKS is a Makefile specific concept.
+
+================================== My Note ==================================
+=    Dynamically constructs and appends multiple design artifact paths      =
+=    for each block in $(BLOCKS), using $(eval ...)                         =
+=    to evaluate and assign Makefile code at runtime.                       =
+=    This pattern builds composite variables                                =
+=    like BLOCK_LEFS, BLOCK_LIBS, BLOCK_GDS, etc.                           =
+=============================================================================
   $(foreach block,$(BLOCKS),$(eval BLOCK_LEFS += ./results/$(PLATFORM)/$(DESIGN_NICKNAME)_$(block)/$(FLOW_VARIANT)/${block}.lef))
   $(foreach block,$(BLOCKS),$(eval BLOCK_LIBS += ./results/$(PLATFORM)/$(DESIGN_NICKNAME)_$(block)/$(FLOW_VARIANT)/${block}.lib))
   $(foreach block,$(BLOCKS),$(eval BLOCK_GDS += ./results/$(PLATFORM)/$(DESIGN_NICKNAME)_$(block)/$(FLOW_VARIANT)/6_final.gds))
@@ -170,15 +189,25 @@ SHELL          := /usr/bin/env bash
 # - the following settings allowed user to point OpenROAD binaries to different
 #   location
 # - default is current install / clone directory
+
+================================== My Note ==================================
+=    Checks whether the variable FLOW_HOME is undefined.                    =
+=    'origin' returns the origin of the variable                            =
+=    (e.g. environment, file, command line, or undefined).                  =
+=    $(MAKEFILE_LIST) contains the list of all Makefiles                    =
+=    that have been included so far, in order.                              =
+=    $(firstword ...) returns the first one                                 =
+=    — usually the top-level Makefile.                                      =
+=============================================================================
 ifeq ($(origin FLOW_HOME), undefined)
 FLOW_HOME := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 endif
 export FLOW_HOME
 
 include $(FLOW_HOME)/scripts/variables.mk
-#########################################################################
-# ⬇️ Inline content from `variables.mk` (for analysis purpose only) ⬇️ #
-#########################################################################
+#############################################################################
+# ⬇️ Inline content from `variables.mk` (for analysis purpose only)     ⬇️ #
+#############################################################################
     # Sets up ORFS variables using make variable support, relying
     # on makefile features such as defaults, forward references,
     # lazy evaluation, conditional code, include statements,
@@ -203,6 +232,11 @@ include $(FLOW_HOME)/scripts/variables.mk
     # - utils, scripts, test - default is under current directory
     export DESIGN_HOME   ?= $(FLOW_HOME)/designs
     export PLATFORM_HOME ?= $(FLOW_HOME)/platforms
+
+================================== My Note ==================================
+=    Sets WORK_HOME to the current directory                                =
+=    (where the Makefile is located) if it is not already defined.          =
+=============================================================================
     export WORK_HOME     ?= .
     
     export UTILS_DIR     ?= $(FLOW_HOME)/util
@@ -217,7 +251,13 @@ include $(FLOW_HOME)/scripts/variables.mk
     ifeq ($(origin DESIGN_NAME), undefined)
       $(error DESIGN_NAME variable net set.)
     endif
-    
+
+================================== My Note ==================================
+=    $(wildcard <path>) returns the path if it exists,                      =
+=    otherwise returns an empty string.                                     =
+=    $(findstring <substring>, <string>) returns the substring if found,    =
+=    otherwise returns an empty string.                                      =
+=============================================================================
     ifneq ($(PLATFORM_DIR),)
     else ifneq ($(wildcard $(PLATFORM_HOME)/$(PLATFORM)),)
       export PLATFORM_DIR = $(PLATFORM_HOME)/$(PLATFORM)
