@@ -293,6 +293,15 @@ include $(FLOW_HOME)/scripts/variables.mk
         # The *probe* are for inserting probe points and have metal shapes
         # on all layers.
         # *lpflow* cells are for multi-power domains
+
+================================== My Note ==================================
+=    DONT_USE_CELLS is used to blacklist specific cells                     =
+=    during synthesis or PnR.                                               =
+=    This helps avoid congestion (large/complex cells),                     =
+=    excludes special-purpose cells like *probe (DFT test points),          =
+=    or lpflow (multi-VDD),                                                 =
+=    and maintains design constraints and manufacturability.                =
+=============================================================================
         export DONT_USE_CELLS += \
             sky130_fd_sc_hd__probe_p_8 sky130_fd_sc_hd__probec_p_8 \
             sky130_fd_sc_hd__lpflow_bleeder_1 \
@@ -431,6 +440,28 @@ include $(FLOW_HOME)/scripts/variables.mk
     # __SPACE__ is a workaround for whitespace hell in "foreach"; there
     # is no way to escape space in defaults.py and get "foreach" to work.
     $(foreach line,$(shell $(SCRIPTS_DIR)/defaults.py),$(eval export $(subst __SPACE__, ,$(line))))
+```
+#############################################################################
+# ⬇️ Inline content from `defaults.py` (for analysis purpose only)      ⬇️ #
+#############################################################################
+        #!/usr/bin/env python3
+        
+        import os
+        import yaml
+        
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        
+        yaml_path = os.path.join(dir_path, "variables.yaml")
+        with open(yaml_path, "r") as file:
+            data = yaml.safe_load(file)
+        
+        for key, value in data.items():
+            if value.get("default", None) is None:
+                continue
+            print(f'export {key}?={str(value["default"]).replace(" ", "__SPACE__")}')
+#############################################################################
+# ⬆️ End of inline defaults.py                                          ⬆️ #
+#############################################################################
     
     export LOG_DIR     = $(WORK_HOME)/logs/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
     export OBJECTS_DIR = $(WORK_HOME)/objects/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
