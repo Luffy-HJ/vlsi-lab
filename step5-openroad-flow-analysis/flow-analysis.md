@@ -166,6 +166,9 @@ endif
 export FLOW_HOME
 
 include $(FLOW_HOME)/scripts/variables.mk
+#####################################################################
+# ⬇️ Inline content from `variables.mk` (for analysis purpose only) ⬇️ #
+#####################################################################
 
 define GENERATE_ABSTRACT_RULE
 ifeq ($(wildcard $(3)),)
