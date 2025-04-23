@@ -1,4 +1,3 @@
-```markdown
 ```makefile
 # settings.mk is not under source control. Put variables into this
 # file to avoid having to adding the to the make command line.
