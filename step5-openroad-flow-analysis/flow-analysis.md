@@ -441,6 +441,7 @@ include $(FLOW_HOME)/scripts/variables.mk
     # is no way to escape space in defaults.py and get "foreach" to work.
     $(foreach line,$(shell $(SCRIPTS_DIR)/defaults.py),$(eval export $(subst __SPACE__, ,$(line))))
 ```
+```python
 #############################################################################
 # ⬇️ Inline content from `defaults.py` (for analysis purpose only)      ⬇️ #
 #############################################################################
@@ -462,7 +463,8 @@ include $(FLOW_HOME)/scripts/variables.mk
 #############################################################################
 # ⬆️ End of inline defaults.py                                          ⬆️ #
 #############################################################################
-    
+```
+```makefile
     export LOG_DIR     = $(WORK_HOME)/logs/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
     export OBJECTS_DIR = $(WORK_HOME)/objects/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
     export REPORTS_DIR = $(WORK_HOME)/reports/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
