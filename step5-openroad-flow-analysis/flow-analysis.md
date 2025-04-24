@@ -1483,7 +1483,13 @@ include $(FLOW_HOME)/scripts/variables.mk
     WRAPPED_LIBS = $(foreach lib,$(notdir $(WRAP_LIBS)),$(OBJECTS_DIR)/$(lib:.lib=_mod.lib))
     export ADDITIONAL_LEFS += $(WRAPPED_LEFS) $(WRAP_LEFS)
     export LIB_FILES += $(WRAP_LIBS) $(WRAPPED_LIBS)
-    
+
+================================== My Note ==================================
+=    Extract filenames from LIB_FILES (remove directories).                 =
+=    Prepend path prefix OBJECTS_DIR/lib/ to each filename.                 =
+=    Replace file extension from .lib.gz to .lib.                           =
+=    Final list represents libraries to exclude from usage.                 =
+=============================================================================
     export DONT_USE_LIBS   = $(patsubst %.lib.gz, %.lib, $(addprefix $(OBJECTS_DIR)/lib/, $(notdir $(LIB_FILES))))
     export DONT_USE_SC_LIB ?= $(firstword $(DONT_USE_LIBS))
     
