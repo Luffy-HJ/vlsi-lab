@@ -1569,6 +1569,12 @@ include $(FLOW_HOME)/scripts/variables.mk
     export GDS_MERGED_FILE = $(RESULTS_DIR)/6_1_merged.$(STREAM_SYSTEM_EXT)
     
     define get_variables
+
+================================== My Note ==================================
+=    .VARIABLES: A list of all variables defined so far in the Makefile     =
+=    Exclude variables whose origin matches the first argument $(1).        =
+=    Filter out variables that match specific patterns.                     =
+=============================================================================
     $(foreach V, $(.VARIABLES),$(if $(filter-out $(1), $(origin $V)), $(if $(filter-out .% %QT_QPA_PLATFORM% %TIME_CMD% KLAYOUT% GENERATE_ABSTRACT_RULE% do-step% do-copy% OPEN_GUI% OPEN_GUI_SHORTCUT% SUB_MAKE% UNSET_VARS% export%, $(V)), $V$ )))
     endef
     
@@ -1579,6 +1585,12 @@ include $(FLOW_HOME)/scripts/variables.mk
     
     
     endef
+
+================================== My Note ==================================
+=    $($V) performs an indirect reference:                                  =
+=    If V = FOO and FOO = hello, then $V = FOO and $($V) = hello.           =
+=    It's used when the name of a variable is stored in another variable.   =
+=============================================================================
     export ISSUE_VARIABLES := $(foreach V, $(ISSUE_VARIABLES_NAMES), $(if $($V),$V=$($V),$V='')$(newline))
     export COMMAND_LINE_ARGS := $(foreach V,$(.VARIABLES),$(if $(filter command% line, $(origin $V)),$(V)))
     
