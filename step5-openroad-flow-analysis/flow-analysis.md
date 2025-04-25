@@ -96,7 +96,7 @@ export DESIGN_CONFIG
 
 include $(DESIGN_CONFIG)
 #############################################################################
-# ⬇️ Inline content from `config.mk` (for analysis purpose only)        ⬇️ #
+# ⬇️ Inline content from config.mk (for analysis purpose only)          ⬇️ #
 #############################################################################
     export DESIGN_NAME = gcd
     export PLATFORM    = nangate45
@@ -206,7 +206,7 @@ export FLOW_HOME
 
 include $(FLOW_HOME)/scripts/variables.mk
 #############################################################################
-# ⬇️ Inline content from `variables.mk` (for analysis purpose only)     ⬇️ #
+# ⬇️ Inline content from variables.mk (for analysis purpose only)       ⬇️ #
 #############################################################################
     # Sets up ORFS variables using make variable support, relying
     # on makefile features such as defaults, forward references,
@@ -271,7 +271,7 @@ include $(FLOW_HOME)/scripts/variables.mk
     
     include $(PLATFORM_DIR)/config.mk
 #############################################################################
-# ⬇️ Inline content from `config.mk` (for analysis purpose only)        ⬇️ #
+# ⬇️ Inline content from config.mk (for analysis purpose only)          ⬇️ #
 #############################################################################
         # Process node
         export PROCESS = 130
@@ -606,7 +606,7 @@ include $(FLOW_HOME)/scripts/variables.mk
             GDS_FILES:
               description: |
                 Path to platform GDS files.
-            LIB_FILES:
+            :
               description: >
                 A Liberty file of the standard cell library with PVT characterization,
                 input and output characteristics, timing and power definitions for each
@@ -1101,7 +1101,7 @@ include $(FLOW_HOME)/scripts/variables.mk
             CDL_FILES:
               description: |
                 Insert additional Circuit Description Language (`.cdl`) netlist files.
-            DFF_LIB_FILES:
+            DFF_:
               description: |
                 Technology mapping liberty files for flip-flops.
             DONT_USE_LIBS:
@@ -1665,7 +1665,64 @@ versions.txt:
 .SECONDEXPANSION:
 $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
         @mkdir -p $(OBJECTS_DIR)/lib
+
+================================== My Note ==================================
+=    Run the preprocessLib.py script                                        =
+=    with the dependency file(s) as input (-i)                              =
+=    and the current target file as output (-o).                            =
+=    This converts Liberty files                                            =
+=    for compatibility with yosys/abc.                                      =
+=============================================================================
         $(UTILS_DIR)/preprocessLib.py -i $^ -o $@
+#############################################################################
+# ⬇️ Inline content from `preprocessLib.py` (for analysis purpose only) ⬇️ #
+#############################################################################
+    #!/usr/bin/env python3
+    import re
+    import sys
+    import gzip
+    import argparse  # argument parsing
+    
+    # Parse and validate arguments
+    # ==============================================================================
+    parser = argparse.ArgumentParser(
+        description="Preprocesses Liberty files for compatibility with yosys/abc"
+    )
+    parser.add_argument("--inputFile", "-i", required=True, help="Input File")
+    parser.add_argument("--outputFile", "-o", required=True, help="Output File")
+    args = parser.parse_args()
+    
+    
+    # Read input file
+    print("Opening file for replace:", args.inputFile)
+    if args.inputFile.endswith(".gz") or args.inputFile.endswith(".GZ"):
+        f = gzip.open(args.inputFile, "rt", encoding="utf-8")
+    else:
+        f = open(args.inputFile, encoding="utf-8")
+    content = f.read().encode("ascii", "ignore").decode("ascii")
+    f.close()
+    
+    # Yosys-abc throws an error if original_pin is found within the liberty file.
+    # removing
+    pattern = r"(.*original_pin.*)"
+    replace = r"/* \1 */;"
+    content, count = re.subn(pattern, replace, content)
+    print("Commented", count, 'lines containing "original_pin"')
+    
+    # Yosys, does not like properties that start with : !, without quotes
+    pattern = r":\s+(!.*)\s+;"
+    replace = r': "\1" ;'
+    content, count = re.subn(pattern, replace, content)
+    print("Replaced malformed functions", count)
+    
+    # Write output file
+    print("Writing replaced file:", args.outputFile)
+    f = open(args.outputFile, "w")
+    f.write(content)
+    f.close()
+#############################################################################
+# ⬆️ End of inline preprocessLib.py                                     ⬆️ #
+#############################################################################
 
 $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
         $(UTILS_DIR)/mergeLib.pl $(PLATFORM)_merged $(DONT_USE_LIBS) > $@
