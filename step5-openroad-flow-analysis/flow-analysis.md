@@ -1624,6 +1624,12 @@ ifeq ($(wildcard $(3)),)
 # more global concerns instead of getting mired in the details of
 # each macro.
 block := $(patsubst ./designs/$(PLATFORM)/$(DESIGN_NICKNAME)/%,%,$(dir $(3)))
+
+================================== My Note ==================================
+=    Runs $(1) and $(2) in parallel using background execution (&).         =
+=    Note: Ensure both commands are independent and side-effect free.       =
+=    You may want to 'wait' after this to synchronize.                      =
+=============================================================================
 $(1) $(2) &:
         $$(UNSET_AND_MAKE) DESIGN_NAME=${block} DESIGN_NICKNAME=$$(DESIGN_NICKNAME)_${block} DESIGN_CONFIG=$$(shell dirname $$(DESIGN_CONFIG))/block.mk generate_abstract
 else
