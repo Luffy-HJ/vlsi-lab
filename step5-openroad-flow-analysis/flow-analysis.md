@@ -1426,6 +1426,13 @@ include $(FLOW_HOME)/scripts/variables.mk
     
     #-------------------------------------------------------------------------------
     # setup all commands used within this flow
+
+================================== My Note ==================================
+=    Use 'env time' to ensure we run the external (GNU) time,               =
+=    not the shell builtin.                                                 =
+=    TIME_CMD uses GNU time with -f                                         =
+=    to report elapsed time, CPU stats, and peak memory.                    =
+=============================================================================
     export TIME_BIN   ?= env time
     TIME_CMD = $(TIME_BIN) -f 'Elapsed time: %E[h:]min:sec. CPU time: user %U sys %S (%P). Peak memory: %MKB.'
     TIME_TEST = $(shell $(TIME_CMD) echo foo 2>/dev/null)
@@ -1466,6 +1473,16 @@ include $(FLOW_HOME)/scripts/variables.mk
     KLAYOUT_BIN_FROM_DIR = $(KLAYOUT_DIR)/klayout
     
     ifeq ($(wildcard $(KLAYOUT_BIN_FROM_DIR)), $(KLAYOUT_BIN_FROM_DIR))
+
+================================== My Note ==================================
+=    Difference between `sh -c` and `$(shell ...)` in Makefile context      =
+=    $(shell command) :                                                     =
+=    Run a shell command at *Makefile evaluation time*.                     =
+=    Captures stdout and assigns it to a Make variable.                     =
+=    sh -c '...' :                                                          =
+=    Run a shell script or command string at *runtime*.                     =
+=    Used to wrap command execution, often with env setup.                  =
+=============================================================================
     KLAYOUT_CMD ?= sh -c 'LD_LIBRARY_PATH=$(dir $(KLAYOUT_BIN_FROM_DIR)) $$0 "$$@"' $(KLAYOUT_BIN_FROM_DIR)
     else
     ifeq ($(KLAYOUT_CMD),)
@@ -1526,6 +1543,13 @@ include $(FLOW_HOME)/scripts/variables.mk
     # Ubuntu 22.04 ships with older than 0.28.11, so support older versions
     # for a while still.
     export KLAYOUT_ENV_VAR_IN_PATH_VERSION = 0.28.11
+
+================================== My Note ==================================
+=    Extract the KLayout version number                                     =
+=    by running KLayout with the `-v` flag,                                 =
+=    filtering the output to include only lines with 'KLayout',             =
+=    and then cutting out the version part.                                 =
+=============================================================================
     export KLAYOUT_VERSION := $(if $(KLAYOUT_CMD),$(shell $(KLAYOUT_CMD) -v 2>/dev/null | grep 'KLayout' | cut -d ' ' -f2),)
     
     export KLAYOUT_ENV_VAR_IN_PATH = $(shell \
