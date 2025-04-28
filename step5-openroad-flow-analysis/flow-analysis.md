@@ -1691,6 +1691,13 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     
     # Parse and validate arguments
     # ==============================================================================
+
+================================== My Note ==================================
+=    Add a required argument "--inputFile" (or "-i" shorthand)              =
+=    and "--outputFile" (or "-o" shorthand)                                 =
+=    for specifying the input file.                                         =
+=    Parse the command-line arguments and store them in the 'args' object.  =
+=============================================================================
     parser = argparse.ArgumentParser(
         description="Preprocesses Liberty files for compatibility with yosys/abc"
     )
@@ -1701,6 +1708,11 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     
     # Read input file
     print("Opening file for replace:", args.inputFile)
+
+================================== My Note ==================================
+=    Check if the input file is gzip-compressed                             =
+=    (with a ".gz" or ".GZ" extension).                                     =
+=============================================================================
     if args.inputFile.endswith(".gz") or args.inputFile.endswith(".GZ"):
         f = gzip.open(args.inputFile, "rt", encoding="utf-8")
     else:
@@ -1710,6 +1722,14 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     
     # Yosys-abc throws an error if original_pin is found within the liberty file.
     # removing
+
+================================== My Note ==================================
+=    Find all lines containing "original_pin" and comment them out.         =
+=    The regex captures the entire line with "original_pin",                =
+=    wraps it in a comment (/* ... */), and appends a semicolon.            =
+=    re.subn() returns the modified content                                 =
+=    and the number of replacements made.                                   =
+=============================================================================
     pattern = r"(.*original_pin.*)"
     replace = r"/* \1 */;"
     content, count = re.subn(pattern, replace, content)
