@@ -441,7 +441,7 @@ include $(FLOW_HOME)/scripts/variables.mk
     # is no way to escape space in defaults.py and get "foreach" to work.
     $(foreach line,$(shell $(SCRIPTS_DIR)/defaults.py),$(eval export $(subst __SPACE__, ,$(line))))
 #############################################################################
-# ⬇️ Inline content from `defaults.py` (for analysis purpose only)      ⬇️ #
+# ⬇️ Inline content from defaults.py   (for analysis purpose only)      ⬇️ #
 #############################################################################
         #!/usr/bin/env python3
         
@@ -454,7 +454,7 @@ include $(FLOW_HOME)/scripts/variables.mk
         with open(yaml_path, "r") as file:
             data = yaml.safe_load(file)
 #############################################################################
-# ⬇️ Inline content from `variables.yaml` (for analysis purpose only)   ⬇️ #
+# ⬇️ Inline content from variables.yaml   (for analysis purpose only)   ⬇️ #
 #############################################################################
 ================================== My Note ==================================
 =    "TNS_END_PERCENT": {                                                   =
@@ -1681,7 +1681,7 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
 =============================================================================
         $(UTILS_DIR)/preprocessLib.py -i $^ -o $@
 #############################################################################
-# ⬇️ Inline content from `preprocessLib.py` (for analysis purpose only) ⬇️ #
+# ⬇️ Inline content from preprocessLib.py   (for analysis purpose only) ⬇️ #
 #############################################################################
     #!/usr/bin/env python3
     import re
@@ -1732,6 +1732,73 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
 
 $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
         $(UTILS_DIR)/mergeLib.pl $(PLATFORM)_merged $(DONT_USE_LIBS) > $@
+#############################################################################
+# ⬇️ Inline content from mergeLib.pl        (for analysis purpose only) ⬇️ #
+#############################################################################
+    #!/usr/bin/env perl
+    
+    # This script is sourced from Brown (with slight modifications). It merges
+    # several timing libraries into one.
+    # ------------------------------------------------------------------------------
+    
+    use strict;
+    use warnings;
+    
+    my $sclname = $ARGV[0];
+    shift @ARGV;
+    my $cnt = @ARGV;
+    
+    if($cnt>0){
+      process_header($ARGV[0]);
+      my $file;
+      foreach my $file (@ARGV) {
+          process_cells($file)
+      }
+      print "\n}\n";
+    } else {
+      print "use: mergeLib.pl new_library_name lib1 lib2 lib3 ....";
+    }
+    
+    
+    sub process_header {
+      my $filename  = shift;
+      open(my $fh, '<', $filename) or die "Could not open file $filename $!";
+      while (<$fh>) {
+        if(/library\s*\(/) {
+          print "library ($sclname) {\n";
+          next;
+        }
+        last if(/^[\t\s]*cell\s*\(/);
+        print $_;
+      }
+      close($fh)
+    }
+    
+    sub process_cells {
+      my $filename  = shift;
+    
+      open(my $fh, '<', $filename) or die "Could not open file $filename $!";
+    
+      my $flag = 0;
+      # cut the cells
+      while (<$fh>) {
+        #chomp $_;
+        if(/^[\t\s]*cell\s*\(/) {#&& $flag==0){
+          die "Error! new cell before finishing the previous one!\n" if($flag!=0);
+          print "\n$_";
+          $flag=1;
+        } elsif($flag > 0){
+            $flag++ if(/\{/);
+            $flag-- if(/\}/);
+            #print "...}\n" if($flag==0);
+            print "$_";
+        }
+      }
+      close($fh)
+    }
+#############################################################################
+# ⬆️ End of inline mergeLib.pl                                          ⬆️ #
+#############################################################################
 
 # Pre-process KLayout tech
 # ==============================================================================
