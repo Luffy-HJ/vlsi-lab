@@ -1875,6 +1875,11 @@ $(OBJECTS_DIR)/klayout_tech.lef: $(TECH_LEF)
 .PHONY: do-klayout_tech
 do-klayout_tech:
         @mkdir -p $(OBJECTS_DIR)
+
+================================== My Note ==================================
+=    Copy the file specified by $(TECH_LEF)                                 =
+=    to $(OBJECTS_DIR)/klayout_tech.lef.                                    =
+=============================================================================
         cp $(TECH_LEF) $(OBJECTS_DIR)/klayout_tech.lef
 
 $(OBJECTS_DIR)/klayout.lyt: $(KLAYOUT_TECH_FILE) $(OBJECTS_DIR)/klayout_tech.lef
