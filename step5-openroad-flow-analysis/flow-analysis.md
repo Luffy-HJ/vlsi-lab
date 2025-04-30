@@ -1775,14 +1775,29 @@ $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
     # This script is sourced from Brown (with slight modifications). It merges
     # several timing libraries into one.
     # ------------------------------------------------------------------------------
-    
+
+================================== My Note ==================================
+=    Enforce strict variable declaration rules.                             =
+=    Enable warnings for potential issues.                                  =
+=============================================================================
     use strict;
     use warnings;
-    
+
+================================== My Note ==================================
+=    Extract the first command-line argument                                =
+=    as the SCL (standard cell library) name,                               =
+=    then shift the remaining arguments and count how many are left.        =
+=============================================================================
     my $sclname = $ARGV[0];
     shift @ARGV;
     my $cnt = @ARGV;
-    
+
+================================== My Note ==================================
+=    If there are remaining input files,                                    =
+=    process the first one to extract the header,                           =
+=    then iterate over all input files to extract                           =
+=    and process their cell definitions.                                    =
+=============================================================================
     if($cnt>0){
       process_header($ARGV[0]);
       my $file;
@@ -1794,7 +1809,15 @@ $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
       print "use: mergeLib.pl new_library_name lib1 lib2 lib3 ....";
     }
     
-    
+
+================================== My Note ==================================
+=    Reads the header portion of a Liberty file                             =
+=    until the first "cell (" line is encountered.                          =
+=    Replaces the original "library (...)" line                             =
+=    with a new one using $sclname.                                         =
+=    Outputs the preserved header content                                   =
+=    to stdout (or to file if redirected).                                  =
+=============================================================================
     sub process_header {
       my $filename  = shift;
       open(my $fh, '<', $filename) or die "Could not open file $filename $!";
@@ -1808,7 +1831,16 @@ $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
       }
       close($fh)
     }
-    
+
+================================== My Note ==================================
+=    This function processes a given file,                                  =
+=    extracting 'cell' definitions                                          =
+=    and handling their boundaries using braces.                            =
+=    It opens the file for reading, checks for proper cell closure,         =
+=    and prints each cell block found. The flag variable tracks             =
+=    whether we are inside a 'cell' block,                                  =
+=    increasing/decreasing based on brace occurrences.                      =
+=============================================================================
     sub process_cells {
       my $filename  = shift;
     
