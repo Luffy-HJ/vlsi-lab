@@ -1605,7 +1605,14 @@ include $(FLOW_HOME)/scripts/variables.mk
     vars:
             mkdir -p $(OBJECTS_DIR)
             $(UTILS_DIR)/generate-vars.sh $(OBJECTS_DIR)/vars
-    
+
+================================== My Note ==================================
+=    Declare 'print-%' as a phony target (not a real file).                 =
+=    Template rule to print the value of any Makefile variable.             =
+=    Usage: make print-VARNAME                                              =
+=    Example: if FOO = hello,                                               =
+=    then `make print-FOO` will output "FOO = hello".                       =
+=============================================================================
     .PHONY: print-%
     # Print any variable, for instance: make print-DIE_AREA
     print-%  : ; @echo "$* = $($*)"
@@ -1736,6 +1743,14 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     print("Commented", count, 'lines containing "original_pin"')
     
     # Yosys, does not like properties that start with : !, without quotes
+
+================================== My Note ==================================
+=    Define a regular expression pattern that matches:                      =
+=    :(spaces)!string(spaces);                                              =
+=    Define the replacement pattern:                                        =
+=    wrap the matched function (e.g., !some_function) in double quotes.     =
+=    :     !command  ; → : "!command" ;                                     =
+=============================================================================
     pattern = r":\s+(!.*)\s+;"
     replace = r': "\1" ;'
     content, count = re.subn(pattern, replace, content)
