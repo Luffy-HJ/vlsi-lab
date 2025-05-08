@@ -1890,10 +1890,38 @@ do-klayout:
 ifeq ($(KLAYOUT_ENV_VAR_IN_PATH),valid)
         SC_LEF_RELATIVE_PATH="$$\(env('FLOW_HOME')\)/$(shell realpath --relative-to=$(FLOW_HOME) $(SC_LEF))"; \
         OTHER_LEFS_RELATIVE_PATHS=$$(echo "$(foreach file, $(OBJECTS_DIR)/klayout_tech.lef $(ADDITIONAL_LEFS),<lef-files>$$(realpath --relative-to=$(RESULTS_DIR) $(file))</lef-files>)"); \
+
+================================== My Note ==================================
+=    Replace the entire <lef-files>...</lef-files> section                  =
+=    in the KLayout tech file with a new <lef-files> tag                    =
+=    containing SC_LEF_RELATIVE_PATH and OTHER_LEFS_RELATIVE_PATHS.         =
+=    Use 's,,,g' instead of 's///g' to avoid escaping forward slashes.      =
+=    The string uses single quotes '...'                                    =
+=    to protect most of the sed command from shell expansion,               =
+=    and double quotes "..." inside                                         =
+=    to allow Makefile or shell variables (like $$VAR) to be expanded.      =
+=    This combination ensures                                               =
+=    that fixed parts of the command are passed literally,                  =
+=    while variables are evaluated and inserted dynamically.                =
+=============================================================================
         sed 's,<lef-files>.*</lef-files>,<lef-files>'"$$SC_LEF_RELATIVE_PATH"'</lef-files>'"$$OTHER_LEFS_RELATIVE_PATHS"',g' $(KLAYOUT_TECH_FILE) > $(OBJECTS_DIR)/klayout.lyt
 else
         sed 's,<lef-files>.*</lef-files>,$(foreach file, $(OBJECTS_DIR)/klayout_tech.lef $(SC_LEF) $(ADDITIONAL_LEFS),<lef-files>$(shell realpath --relative-to=$(RESULTS_DIR) $(file))</lef-files>),g' $(KLAYOUT_TECH_FILE) > $(OBJECTS_DIR)/klayout.lyt
 endif
+
+================================== My Note ==================================
+=    'sed' with '>' is used to redirect                                     =
+=    the output of the sed command to a new file,                           =
+=    instead of modifying the original file.                                =
+=    It processes the input file, applies the sed transformations,          =
+=    and writes the result to the specified output file.                    =
+=    'sed -i' is used to modify the file directly,                          =
+=    without creating a new file.                                           =
+=    The '-i' option means "in-place"                                       =
+=    so the original file is edited,                                        =
+=    and the changes are applied directly to it.                            =
+=    No output is generated unless redirected.                              =
+=============================================================================
         sed -i 's,<map-file>.*</map-file>,$(foreach file, $(FLOW_HOME)/platforms/$(PLATFORM)/*map,<map-file>$(shell realpath $(file))</map-file>),g' $(OBJECTS_DIR)/klayout.lyt
 
 $(OBJECTS_DIR)/klayout_wrap.lyt: $(KLAYOUT_TECH_FILE) $(OBJECTS_DIR)/klayout_tech.lef
@@ -1901,10 +1929,29 @@ $(OBJECTS_DIR)/klayout_wrap.lyt: $(KLAYOUT_TECH_FILE) $(OBJECTS_DIR)/klayout_tec
 
 .PHONY: do-klayout_wrap
 do-klayout_wrap:
+
+================================== My Note ==================================
+=    Use `sed` to replace the entire <lef-files>...</lef-files> block       =
+=    in the input KLayout tech file with a new set of <lef-files> entries,  =
+=    one for each LEF file in the list.                                     =
+=    Each file path is converted to a path                                  =
+=    relative to $(OBJECTS_DIR)/def using `realpath`.                       =
+=    The output is written to klayout_wrap.lyt.                             =
+=============================================================================
         sed 's,<lef-files>.*</lef-files>,$(foreach file, $(OBJECTS_DIR)/klayout_tech.lef $(WRAP_LEFS),<lef-files>$(shell realpath --relative-to=$(OBJECTS_DIR)/def $(file))</lef-files>),g' $(KLAYOUT_TECH_FILE) > $(OBJECTS_DIR)/klayout_wrap.lyt
 
 $(WRAPPED_LEFS):
         mkdir -p $(OBJECTS_DIR)/lef $(OBJECTS_DIR)/def
+
+================================== My Note ==================================
+=    Run the wrap.tcl script to generate a wrapped LEF file.                =
+=    -cfg specifies the configuration file used by the script.              =
+=    -macro provides the path to the original LEF file                      =
+=    that should be wrapped.                                                =
+=    The $(filter ...) expression extracts the correct LEF file path        =
+=    from the WRAP_LEFS list,                                               =
+=    by matching it to the current target name (with '_mod' removed).       =
+=============================================================================
         util/cell-veneer/wrap.tcl -cfg $(WRAP_CFG) -macro $(filter %$(notdir $(@:_mod.lef=.lef)),$(WRAP_LEFS))
         mv $(notdir $@) $@
         mv $(notdir $(@:lef=def)) $(dir $@)../def/$(notdir $(@:lef=def))
