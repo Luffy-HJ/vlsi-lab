@@ -83,30 +83,30 @@
 # DESIGN_CONFIG=./designs/ihp-sg13g2/riscv32i/config.mk
 # DESIGN_CONFIG=./designs/ihp-sg13g2/i2c-gpio-expander/config.mk
 
-================================== My Note ==================================
-=    Uses the '?=' operator, which assigns a value to the variable          =
-=    only if it hasn't already been defined.                                =
-=    This is called conditional assignment.                                 =
-=    The right-hand side is evaluated immediately                           =
-=    if the assignment happens.                                             =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Uses the '?=' operator, which assigns a value to the variable                                                                                       =
+=    only if it hasn't already been defined.                                                                                                             =
+=    This is called conditional assignment.                                                                                                              =
+=    The right-hand side is evaluated immediately                                                                                                        =
+=    if the assignment happens.                                                                                                                          =
+==========================================================================================================================================================
 # Default design
 DESIGN_CONFIG ?= ./designs/nangate45/gcd/config.mk
 export DESIGN_CONFIG
 
 include $(DESIGN_CONFIG)
-#############################################################################
-# ⬇️ Inline content from config.mk (for analysis purpose only)          ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from config.mk (for analysis purpose only)                                                                                       ⬇️ #
+##########################################################################################################################################################
     export DESIGN_NAME = gcd
     export PLATFORM    = nangate45
 
-================================== My Note ==================================
-=    VERILOG_FILES is defined before DESIGN_HOME appears,                   =
-=    but this works because Make uses *lazy evaluation* (`=`).              =
-=    The value is not resolved until it's actually needed,                  =
-=    by which time DESIGN_HOME will have been defined in variables.mk.      =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    VERILOG_FILES is defined before DESIGN_HOME appears,                                                                                                =
+=    but this works because Make uses *lazy evaluation* (`=`).                                                                                           =
+=    The value is not resolved until it's actually needed,                                                                                               =
+=    by which time DESIGN_HOME will have been defined in variables.mk.                                                                                   =
+==========================================================================================================================================================
     export VERILOG_FILES = $(DESIGN_HOME)/src/$(DESIGN_NAME)/gcd.v
     export SDC_FILE      = $(DESIGN_HOME)/$(PLATFORM)/$(DESIGN_NAME)/constraint.sdc
     export ABC_AREA      = 1
@@ -118,13 +118,13 @@ include $(DESIGN_CONFIG)
     export PLACE_DENSITY_LB_ADDON = 0.20
     export TNS_END_PERCENT        = 100
     export REMOVE_CELLS_FOR_EQY   = TAPCELL*
-#############################################################################
-# ⬆️ End of inline config.mk                                            ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline config.mk                                                                                                                         ⬆️ #
+##########################################################################################################################################################
 
-================================== My Note ==================================
-=    $(dir ...) returns the directory portion of DESIGN_CONFIG.             =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    $(dir ...) returns the directory portion of DESIGN_CONFIG.                                                                                          =
+==========================================================================================================================================================
 export DESIGN_DIR  = $(dir $(DESIGN_CONFIG))
 
 # default value "base" is duplicated from variables.yaml because we need it
@@ -133,20 +133,20 @@ export DESIGN_DIR  = $(dir $(DESIGN_CONFIG))
 export FLOW_VARIANT?=base
 # BLOCKS is a ORFS make flow specific feature.
 
-================================== My Note ==================================
-=    run this block only if BLOCKS is not empty.                            =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    run this block only if BLOCKS is not empty.                                                                                                         =
+==========================================================================================================================================================
 ifneq ($(BLOCKS),)
   # Normally this comes from variables.yaml, but we need it here to set up these variables
   # which are part of the DESIGN_CONFIG. BLOCKS is a Makefile specific concept.
 
-================================== My Note ==================================
-=    Dynamically constructs and appends multiple design artifact paths      =
-=    for each block in $(BLOCKS), using $(eval ...)                         =
-=    to evaluate and assign Makefile code at runtime.                       =
-=    This pattern builds composite variables                                =
-=    like BLOCK_LEFS, BLOCK_LIBS, BLOCK_GDS, etc.                           =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Dynamically constructs and appends multiple design artifact paths                                                                                   =
+=    for each block in $(BLOCKS), using $(eval ...)                                                                                                      =
+=    to evaluate and assign Makefile code at runtime.                                                                                                    =
+=    This pattern builds composite variables                                                                                                             =
+=    like BLOCK_LEFS, BLOCK_LIBS, BLOCK_GDS, etc.                                                                                                        =
+==========================================================================================================================================================
   $(foreach block,$(BLOCKS),$(eval BLOCK_LEFS += ./results/$(PLATFORM)/$(DESIGN_NICKNAME)_$(block)/$(FLOW_VARIANT)/${block}.lef))
   $(foreach block,$(BLOCKS),$(eval BLOCK_LIBS += ./results/$(PLATFORM)/$(DESIGN_NICKNAME)_$(block)/$(FLOW_VARIANT)/${block}.lib))
   $(foreach block,$(BLOCKS),$(eval BLOCK_GDS += ./results/$(PLATFORM)/$(DESIGN_NICKNAME)_$(block)/$(FLOW_VARIANT)/6_final.gds))
@@ -190,24 +190,24 @@ SHELL          := /usr/bin/env bash
 #   location
 # - default is current install / clone directory
 
-================================== My Note ==================================
-=    Checks whether the variable FLOW_HOME is undefined.                    =
-=    'origin' returns the origin of the variable                            =
-=    (e.g. environment, file, command line, or undefined).                  =
-=    $(MAKEFILE_LIST) contains the list of all Makefiles                    =
-=    that have been included so far, in order.                              =
-=    $(firstword ...) returns the first one                                 =
-=    — usually the top-level Makefile.                                      =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Checks whether the variable FLOW_HOME is undefined.                                                                                                 =
+=    'origin' returns the origin of the variable                                                                                                         =
+=    (e.g. environment, file, command line, or undefined).                                                                                               =
+=    $(MAKEFILE_LIST) contains the list of all Makefiles                                                                                                 =
+=    that have been included so far, in order.                                                                                                           =
+=    $(firstword ...) returns the first one                                                                                                              =
+=    — usually the top-level Makefile.                                                                                                                   =
+==========================================================================================================================================================
 ifeq ($(origin FLOW_HOME), undefined)
 FLOW_HOME := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
 endif
 export FLOW_HOME
 
 include $(FLOW_HOME)/scripts/variables.mk
-#############################################################################
-# ⬇️ Inline content from variables.mk (for analysis purpose only)       ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from variables.mk                                                                              (for analysis purpose only)       ⬇️ #
+##########################################################################################################################################################
     # Sets up ORFS variables using make variable support, relying
     # on makefile features such as defaults, forward references,
     # lazy evaluation, conditional code, include statements,
@@ -233,10 +233,10 @@ include $(FLOW_HOME)/scripts/variables.mk
     export DESIGN_HOME   ?= $(FLOW_HOME)/designs
     export PLATFORM_HOME ?= $(FLOW_HOME)/platforms
 
-================================== My Note ==================================
-=    Sets WORK_HOME to the current directory                                =
-=    (where the Makefile is located) if it is not already defined.          =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Sets WORK_HOME to the current directory                                                                                                             =
+=    (where the Makefile is located) if it is not already defined.                                                                                       =
+==========================================================================================================================================================
     export WORK_HOME     ?= .
     
     export UTILS_DIR     ?= $(FLOW_HOME)/util
@@ -252,12 +252,12 @@ include $(FLOW_HOME)/scripts/variables.mk
       $(error DESIGN_NAME variable net set.)
     endif
 
-================================== My Note ==================================
-=    $(wildcard <path>) returns the path if it exists,                      =
-=    otherwise returns an empty string.                                     =
-=    $(findstring <substring>, <string>) returns the substring if found,    =
-=    otherwise returns an empty string.                                     =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    $(wildcard <path>) returns the path if it exists,                                                                                                   =
+=    otherwise returns an empty string.                                                                                                                  =
+=    $(findstring <substring>, <string>) returns the substring if found,                                                                                 =
+=    otherwise returns an empty string.                                                                                                                  =
+==========================================================================================================================================================
     ifneq ($(PLATFORM_DIR),)
     else ifneq ($(wildcard $(PLATFORM_HOME)/$(PLATFORM)),)
       export PLATFORM_DIR = $(PLATFORM_HOME)/$(PLATFORM)
@@ -270,9 +270,9 @@ include $(FLOW_HOME)/scripts/variables.mk
     endif
     
     include $(PLATFORM_DIR)/config.mk
-#############################################################################
-# ⬇️ Inline content from config.mk (for analysis purpose only)          ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from config.mk (for analysis purpose only)                                                                                       ⬇️ #
+##########################################################################################################################################################
         # Process node
         export PROCESS = 130
         
@@ -294,14 +294,14 @@ include $(FLOW_HOME)/scripts/variables.mk
         # on all layers.
         # *lpflow* cells are for multi-power domains
 
-================================== My Note ==================================
-=    DONT_USE_CELLS is used to blacklist specific cells                     =
-=    during synthesis or PnR.                                               =
-=    This helps avoid congestion (large/complex cells),                     =
-=    excludes special-purpose cells like *probe (DFT test points),          =
-=    or lpflow (multi-VDD),                                                 =
-=    and maintains design constraints and manufacturability.                =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    DONT_USE_CELLS is used to blacklist specific cells                                                                                                  =
+=    during synthesis or PnR.                                                                                                                            =
+=    This helps avoid congestion (large/complex cells),                                                                                                  =
+=    excludes special-purpose cells like *probe (DFT test points),                                                                                       =
+=    or lpflow (multi-VDD),                                                                                                                              =
+=    and maintains design constraints and manufacturability.                                                                                             =
+==========================================================================================================================================================
         export DONT_USE_CELLS += \
             sky130_fd_sc_hd__probe_p_8 sky130_fd_sc_hd__probec_p_8 \
             sky130_fd_sc_hd__lpflow_bleeder_1 \
@@ -433,16 +433,16 @@ include $(FLOW_HOME)/scripts/variables.mk
         #LVS Check
         export CDL_FILE = $(PLATFORM_DIR)/cdl/$(PLATFORM).cdl
         export KLAYOUT_LVS_FILE = $(PLATFORM_DIR)/lvs/$(PLATFORM).lylvs
-#############################################################################
-# ⬆️ End of inline config.mk                                            ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline config.mk                                                                                                                         ⬆️ #
+##########################################################################################################################################################
 
     # __SPACE__ is a workaround for whitespace hell in "foreach"; there
     # is no way to escape space in defaults.py and get "foreach" to work.
     $(foreach line,$(shell $(SCRIPTS_DIR)/defaults.py),$(eval export $(subst __SPACE__, ,$(line))))
-#############################################################################
-# ⬇️ Inline content from defaults.py   (for analysis purpose only)      ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from defaults.py                                                                                (for analysis purpose only)      ⬇️ #
+##########################################################################################################################################################
         #!/usr/bin/env python3
         
         import os
@@ -453,16 +453,16 @@ include $(FLOW_HOME)/scripts/variables.mk
         yaml_path = os.path.join(dir_path, "variables.yaml")
         with open(yaml_path, "r") as file:
             data = yaml.safe_load(file)
-#############################################################################
-# ⬇️ Inline content from variables.yaml   (for analysis purpose only)   ⬇️ #
-#############################################################################
-================================== My Note ==================================
-=    "TNS_END_PERCENT": {                                                   =
-=        "description": "...",                                              =
-=        "default": 100,                                                    =
-=        "stages": ["cts", "floorplan", "grt"]                              =
-=    }                                                                      =
-=============================================================================
+##########################################################################################################################################################
+# ⬇️ Inline content from variables.yaml                                                                                (for analysis purpose only)   ⬇️ #
+##########################################################################################################################################################
+======================================================================== My  Note ========================================================================
+=    "TNS_END_PERCENT": {                                                                                                                                =
+=        "description": "...",                                                                                                                           =
+=        "default": 100,                                                                                                                                 =
+=        "stages": ["cts", "floorplan", "grt"]                                                                                                           =
+=    }                                                                                                                                                   =
+==========================================================================================================================================================
             ---
             GENERATE_ARTIFACTS_ON_FAILURE:
               description: >
@@ -1383,21 +1383,21 @@ include $(FLOW_HOME)/scripts/variables.mk
               description: >
                 Flow variant to use, used in the flow variant directory name.
               default: base
-#############################################################################
-# ⬆️ End of inline variables.yaml                                       ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline variables.yaml                                                                                                                    ⬆️ #
+##########################################################################################################################################################
 
-================================== My Note ==================================
-=    Skip if the "default" key is missing in the value dictionary.          =
-=    Print an export statement, replacing spaces in the default value.      =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Skip if the "default" key is missing in the value dictionary.                                                                                       =
+=    Print an export statement, replacing spaces in the default value.                                                                                   =
+==========================================================================================================================================================
         for key, value in data.items():
             if value.get("default", None) is None:
                 continue
             print(f'export {key}?={str(value["default"]).replace(" ", "__SPACE__")}')
-#############################################################################
-# ⬆️ End of inline defaults.py                                          ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline defaults.py                                                                                                                       ⬆️ #
+##########################################################################################################################################################
 
     export LOG_DIR     = $(WORK_HOME)/logs/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
     export OBJECTS_DIR = $(WORK_HOME)/objects/$(PLATFORM)/$(DESIGN_NICKNAME)/$(FLOW_VARIANT)
@@ -1427,12 +1427,12 @@ include $(FLOW_HOME)/scripts/variables.mk
     #-------------------------------------------------------------------------------
     # setup all commands used within this flow
 
-================================== My Note ==================================
-=    Use 'env time' to ensure we run the external (GNU) time,               =
-=    not the shell builtin.                                                 =
-=    TIME_CMD uses GNU time with -f                                         =
-=    to report elapsed time, CPU stats, and peak memory.                    =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Use 'env time' to ensure we run the external (GNU) time,                                                                                            =
+=    not the shell builtin.                                                                                                                              =
+=    TIME_CMD uses GNU time with -f                                                                                                                      =
+=    to report elapsed time, CPU stats, and peak memory.                                                                                                 =
+==========================================================================================================================================================
     export TIME_BIN   ?= env time
     TIME_CMD = $(TIME_BIN) -f 'Elapsed time: %E[h:]min:sec. CPU time: user %U sys %S (%P). Peak memory: %MKB.'
     TIME_TEST = $(shell $(TIME_CMD) echo foo 2>/dev/null)
@@ -1474,15 +1474,15 @@ include $(FLOW_HOME)/scripts/variables.mk
     
     ifeq ($(wildcard $(KLAYOUT_BIN_FROM_DIR)), $(KLAYOUT_BIN_FROM_DIR))
 
-================================== My Note ==================================
-=    Difference between `sh -c` and `$(shell ...)` in Makefile context      =
-=    $(shell command) :                                                     =
-=    Run a shell command at *Makefile evaluation time*.                     =
-=    Captures stdout and assigns it to a Make variable.                     =
-=    sh -c '...' :                                                          =
-=    Run a shell script or command string at *runtime*.                     =
-=    Used to wrap command execution, often with env setup.                  =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Difference between `sh -c` and `$(shell ...)` in Makefile context                                                                                   =
+=    $(shell command) :                                                                                                                                  =
+=    Run a shell command at *Makefile evaluation time*.                                                                                                  =
+=    Captures stdout and assigns it to a Make variable.                                                                                                  =
+=    sh -c '...' :                                                                                                                                       =
+=    Run a shell script or command string at *runtime*.                                                                                                  =
+=    Used to wrap command execution, often with env setup.                                                                                               =
+==========================================================================================================================================================
     KLAYOUT_CMD ?= sh -c 'LD_LIBRARY_PATH=$(dir $(KLAYOUT_BIN_FROM_DIR)) $$0 "$$@"' $(KLAYOUT_BIN_FROM_DIR)
     else
     ifeq ($(KLAYOUT_CMD),)
@@ -1501,12 +1501,12 @@ include $(FLOW_HOME)/scripts/variables.mk
     export ADDITIONAL_LEFS += $(WRAPPED_LEFS) $(WRAP_LEFS)
     export LIB_FILES += $(WRAP_LIBS) $(WRAPPED_LIBS)
 
-================================== My Note ==================================
-=    Extract filenames from LIB_FILES (remove directories).                 =
-=    Prepend path prefix OBJECTS_DIR/lib/ to each filename.                 =
-=    Replace file extension from .lib.gz to .lib.                           =
-=    Final list represents libraries to exclude from usage.                 =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Extract filenames from LIB_FILES (remove directories).                                                                                              =
+=    Prepend path prefix OBJECTS_DIR/lib/ to each filename.                                                                                              =
+=    Replace file extension from .lib.gz to .lib.                                                                                                        =
+=    Final list represents libraries to exclude from usage.                                                                                              =
+==========================================================================================================================================================
     export DONT_USE_LIBS   = $(patsubst %.lib.gz, %.lib, $(addprefix $(OBJECTS_DIR)/lib/, $(notdir $(LIB_FILES))))
     export DONT_USE_SC_LIB ?= $(firstword $(DONT_USE_LIBS))
     
@@ -1544,12 +1544,12 @@ include $(FLOW_HOME)/scripts/variables.mk
     # for a while still.
     export KLAYOUT_ENV_VAR_IN_PATH_VERSION = 0.28.11
 
-================================== My Note ==================================
-=    Extract the KLayout version number                                     =
-=    by running KLayout with the `-v` flag,                                 =
-=    filtering the output to include only lines with 'KLayout',             =
-=    and then cutting out the version part.                                 =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Extract the KLayout version number                                                                                                                  =
+=    by running KLayout with the `-v` flag,                                                                                                              =
+=    filtering the output to include only lines with 'KLayout',                                                                                          =
+=    and then cutting out the version part.                                                                                                              =
+==========================================================================================================================================================
     export KLAYOUT_VERSION := $(if $(KLAYOUT_CMD),$(shell $(KLAYOUT_CMD) -v 2>/dev/null | grep 'KLayout' | cut -d ' ' -f2),)
     
     export KLAYOUT_ENV_VAR_IN_PATH = $(shell \
@@ -1570,11 +1570,11 @@ include $(FLOW_HOME)/scripts/variables.mk
     
     define get_variables
 
-================================== My Note ==================================
-=    .VARIABLES: A list of all variables defined so far in the Makefile     =
-=    Exclude variables whose origin matches the first argument $(1).        =
-=    Filter out variables that match specific patterns.                     =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    .VARIABLES: A list of all variables defined so far in the Makefile                                                                                  =
+=    Exclude variables whose origin matches the first argument $(1).                                                                                     =
+=    Filter out variables that match specific patterns.                                                                                                  =
+==========================================================================================================================================================
     $(foreach V, $(.VARIABLES),$(if $(filter-out $(1), $(origin $V)), $(if $(filter-out .% %QT_QPA_PLATFORM% %TIME_CMD% KLAYOUT% GENERATE_ABSTRACT_RULE% do-step% do-copy% OPEN_GUI% OPEN_GUI_SHORTCUT% SUB_MAKE% UNSET_VARS% export%, $(V)), $V$ )))
     endef
     
@@ -1586,11 +1586,11 @@ include $(FLOW_HOME)/scripts/variables.mk
     
     endef
 
-================================== My Note ==================================
-=    $($V) performs an indirect reference:                                  =
-=    If V = FOO and FOO = hello, then $V = FOO and $($V) = hello.           =
-=    It's used when the name of a variable is stored in another variable.   =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    $($V) performs an indirect reference:                                                                                                               =
+=    If V = FOO and FOO = hello, then $V = FOO and $($V) = hello.                                                                                        =
+=    It's used when the name of a variable is stored in another variable.                                                                                =
+==========================================================================================================================================================
     export ISSUE_VARIABLES := $(foreach V, $(ISSUE_VARIABLES_NAMES), $(if $($V),$V=$($V),$V='')$(newline))
     export COMMAND_LINE_ARGS := $(foreach V,$(.VARIABLES),$(if $(filter command% line, $(origin $V)),$(V)))
     
@@ -1606,19 +1606,19 @@ include $(FLOW_HOME)/scripts/variables.mk
             mkdir -p $(OBJECTS_DIR)
             $(UTILS_DIR)/generate-vars.sh $(OBJECTS_DIR)/vars
 
-================================== My Note ==================================
-=    Declare 'print-%' as a phony target (not a real file).                 =
-=    Template rule to print the value of any Makefile variable.             =
-=    Usage: make print-VARNAME                                              =
-=    Example: if FOO = hello,                                               =
-=    then `make print-FOO` will output "FOO = hello".                       =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Declare 'print-%' as a phony target (not a real file).                                                                                              =
+=    Template rule to print the value of any Makefile variable.                                                                                          =
+=    Usage: make print-VARNAME                                                                                                                           =
+=    Example: if FOO = hello,                                                                                                                            =
+=    then `make print-FOO` will output "FOO = hello".                                                                                                    =
+==========================================================================================================================================================
     .PHONY: print-%
     # Print any variable, for instance: make print-DIE_AREA
     print-%  : ; @echo "$* = $($*)"
-#############################################################################
-# ⬆️ End of inline variables.mk                                         ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline variables.mk                                                                                                                      ⬆️ #
+##########################################################################################################################################################
 
 define GENERATE_ABSTRACT_RULE
 ifeq ($(wildcard $(3)),)
@@ -1632,11 +1632,11 @@ ifeq ($(wildcard $(3)),)
 # each macro.
 block := $(patsubst ./designs/$(PLATFORM)/$(DESIGN_NICKNAME)/%,%,$(dir $(3)))
 
-================================== My Note ==================================
-=    Runs $(1) and $(2) in parallel using background execution (&).         =
-=    Note: Ensure both commands are independent and side-effect free.       =
-=    You may want to 'wait' after this to synchronize.                      =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Runs $(1) and $(2) in parallel using background execution (&).                                                                                      =
+=    Note: Ensure both commands are independent and side-effect free.                                                                                    =
+=    You may want to 'wait' after this to synchronize.                                                                                                   =
+==========================================================================================================================================================
 $(1) $(2) &:
         $$(UNSET_AND_MAKE) DESIGN_NAME=${block} DESIGN_NICKNAME=$$(DESIGN_NICKNAME)_${block} DESIGN_CONFIG=$$(shell dirname $$(DESIGN_CONFIG))/block.mk generate_abstract
 else
@@ -1679,17 +1679,17 @@ versions.txt:
 $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
         @mkdir -p $(OBJECTS_DIR)/lib
 
-================================== My Note ==================================
-=    Run the preprocessLib.py script                                        =
-=    with the dependency file(s) as input (-i)                              =
-=    and the current target file as output (-o).                            =
-=    This converts Liberty files                                            =
-=    for compatibility with yosys/abc.                                      =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Run the preprocessLib.py script                                                                                                                     =
+=    with the dependency file(s) as input (-i)                                                                                                           =
+=    and the current target file as output (-o).                                                                                                         =
+=    This converts Liberty files                                                                                                                         =
+=    for compatibility with yosys/abc.                                                                                                                   =
+==========================================================================================================================================================
         $(UTILS_DIR)/preprocessLib.py -i $^ -o $@
-#############################################################################
-# ⬇️ Inline content from preprocessLib.py   (for analysis purpose only) ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from preprocessLib.py                                                                                (for analysis purpose only) ⬇️ #
+##########################################################################################################################################################
     #!/usr/bin/env python3
     import re
     import sys
@@ -1699,12 +1699,12 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     # Parse and validate arguments
     # ==============================================================================
 
-================================== My Note ==================================
-=    Add a required argument "--inputFile" (or "-i" shorthand)              =
-=    and "--outputFile" (or "-o" shorthand)                                 =
-=    for specifying the input file.                                         =
-=    Parse the command-line arguments and store them in the 'args' object.  =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Add a required argument "--inputFile" (or "-i" shorthand)                                                                                           =
+=    and "--outputFile" (or "-o" shorthand)                                                                                                              =
+=    for specifying the input file.                                                                                                                      =
+=    Parse the command-line arguments and store them in the 'args' object.                                                                               =
+==========================================================================================================================================================
     parser = argparse.ArgumentParser(
         description="Preprocesses Liberty files for compatibility with yosys/abc"
     )
@@ -1716,10 +1716,10 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     # Read input file
     print("Opening file for replace:", args.inputFile)
 
-================================== My Note ==================================
-=    Check if the input file is gzip-compressed                             =
-=    (with a ".gz" or ".GZ" extension).                                     =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Check if the input file is gzip-compressed                                                                                                          =
+=    (with a ".gz" or ".GZ" extension).                                                                                                                  =
+==========================================================================================================================================================
     if args.inputFile.endswith(".gz") or args.inputFile.endswith(".GZ"):
         f = gzip.open(args.inputFile, "rt", encoding="utf-8")
     else:
@@ -1730,13 +1730,13 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     # Yosys-abc throws an error if original_pin is found within the liberty file.
     # removing
 
-================================== My Note ==================================
-=    Find all lines containing "original_pin" and comment them out.         =
-=    The regex captures the entire line with "original_pin",                =
-=    wraps it in a comment (/* ... */), and appends a semicolon.            =
-=    re.subn() returns the modified content                                 =
-=    and the number of replacements made.                                   =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Find all lines containing "original_pin" and comment them out.                                                                                      =
+=    The regex captures the entire line with "original_pin",                                                                                             =
+=    wraps it in a comment (/* ... */), and appends a semicolon.                                                                                         =
+=    re.subn() returns the modified content                                                                                                              =
+=    and the number of replacements made.                                                                                                                =
+==========================================================================================================================================================
     pattern = r"(.*original_pin.*)"
     replace = r"/* \1 */;"
     content, count = re.subn(pattern, replace, content)
@@ -1744,13 +1744,13 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     
     # Yosys, does not like properties that start with : !, without quotes
 
-================================== My Note ==================================
-=    Define a regular expression pattern that matches:                      =
-=    :(spaces)!string(spaces);                                              =
-=    Define the replacement pattern:                                        =
-=    wrap the matched function (e.g., !some_function) in double quotes.     =
-=    :     !command  ; → : "!command" ;                                     =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Define a regular expression pattern that matches:                                                                                                   =
+=    :(spaces)!string(spaces);                                                                                                                           =
+=    Define the replacement pattern:                                                                                                                     =
+=    wrap the matched function (e.g., !some_function) in double quotes.                                                                                  =
+=    :     !command  ; → : "!command" ;                                                                                                                  =
+==========================================================================================================================================================
     pattern = r":\s+(!.*)\s+;"
     replace = r': "\1" ;'
     content, count = re.subn(pattern, replace, content)
@@ -1761,43 +1761,43 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
     f = open(args.outputFile, "w")
     f.write(content)
     f.close()
-#############################################################################
-# ⬆️ End of inline preprocessLib.py                                     ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline preprocessLib.py                                                                                                                  ⬆️ #
+##########################################################################################################################################################
 
 $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
         $(UTILS_DIR)/mergeLib.pl $(PLATFORM)_merged $(DONT_USE_LIBS) > $@
-#############################################################################
-# ⬇️ Inline content from mergeLib.pl        (for analysis purpose only) ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from mergeLib.pl                                                                                     (for analysis purpose only) ⬇️ #
+##########################################################################################################################################################
     #!/usr/bin/env perl
     
     # This script is sourced from Brown (with slight modifications). It merges
     # several timing libraries into one.
     # ------------------------------------------------------------------------------
 
-================================== My Note ==================================
-=    Enforce strict variable declaration rules.                             =
-=    Enable warnings for potential issues.                                  =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Enforce strict variable declaration rules.                                                                                                          =
+=    Enable warnings for potential issues.                                                                                                               =
+==========================================================================================================================================================
     use strict;
     use warnings;
 
-================================== My Note ==================================
-=    Extract the first command-line argument                                =
-=    as the SCL (standard cell library) name,                               =
-=    then shift the remaining arguments and count how many are left.        =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Extract the first command-line argument                                                                                                             =
+=    as the SCL (standard cell library) name,                                                                                                            =
+=    then shift the remaining arguments and count how many are left.                                                                                     =
+==========================================================================================================================================================
     my $sclname = $ARGV[0];
     shift @ARGV;
     my $cnt = @ARGV;
 
-================================== My Note ==================================
-=    If there are remaining input files,                                    =
-=    process the first one to extract the header,                           =
-=    then iterate over all input files to extract                           =
-=    and process their cell definitions.                                    =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    If there are remaining input files,                                                                                                                 =
+=    process the first one to extract the header,                                                                                                        =
+=    then iterate over all input files to extract                                                                                                        =
+=    and process their cell definitions.                                                                                                                 =
+==========================================================================================================================================================
     if($cnt>0){
       process_header($ARGV[0]);
       my $file;
@@ -1810,14 +1810,14 @@ $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
     }
     
 
-================================== My Note ==================================
-=    Reads the header portion of a Liberty file                             =
-=    until the first "cell (" line is encountered.                          =
-=    Replaces the original "library (...)" line                             =
-=    with a new one using $sclname.                                         =
-=    Outputs the preserved header content                                   =
-=    to stdout (or to file if redirected).                                  =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Reads the header portion of a Liberty file                                                                                                          =
+=    until the first "cell (" line is encountered.                                                                                                       =
+=    Replaces the original "library (...)" line                                                                                                          =
+=    with a new one using $sclname.                                                                                                                      =
+=    Outputs the preserved header content                                                                                                                =
+=    to stdout (or to file if redirected).                                                                                                               =
+==========================================================================================================================================================
     sub process_header {
       my $filename  = shift;
       open(my $fh, '<', $filename) or die "Could not open file $filename $!";
@@ -1832,15 +1832,15 @@ $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
       close($fh)
     }
 
-================================== My Note ==================================
-=    This function processes a given file,                                  =
-=    extracting 'cell' definitions                                          =
-=    and handling their boundaries using braces.                            =
-=    It opens the file for reading, checks for proper cell closure,         =
-=    and prints each cell block found. The flag variable tracks             =
-=    whether we are inside a 'cell' block,                                  =
-=    increasing/decreasing based on brace occurrences.                      =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    This function processes a given file,                                                                                                               =
+=    extracting 'cell' definitions                                                                                                                       =
+=    and handling their boundaries using braces.                                                                                                         =
+=    It opens the file for reading, checks for proper cell closure,                                                                                      =
+=    and prints each cell block found. The flag variable tracks                                                                                          =
+=    whether we are inside a 'cell' block,                                                                                                               =
+=    increasing/decreasing based on brace occurrences.                                                                                                   =
+==========================================================================================================================================================
     sub process_cells {
       my $filename  = shift;
     
@@ -1863,9 +1863,9 @@ $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
       }
       close($fh)
     }
-#############################################################################
-# ⬆️ End of inline mergeLib.pl                                          ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline mergeLib.pl                                                                                                                       ⬆️ #
+##########################################################################################################################################################
 
 # Pre-process KLayout tech
 # ==============================================================================
@@ -1876,10 +1876,10 @@ $(OBJECTS_DIR)/klayout_tech.lef: $(TECH_LEF)
 do-klayout_tech:
         @mkdir -p $(OBJECTS_DIR)
 
-================================== My Note ==================================
-=    Copy the file specified by $(TECH_LEF)                                 =
-=    to $(OBJECTS_DIR)/klayout_tech.lef.                                    =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Copy the file specified by $(TECH_LEF)                                                                                                              =
+=    to $(OBJECTS_DIR)/klayout_tech.lef.                                                                                                                 =
+==========================================================================================================================================================
         cp $(TECH_LEF) $(OBJECTS_DIR)/klayout_tech.lef
 
 $(OBJECTS_DIR)/klayout.lyt: $(KLAYOUT_TECH_FILE) $(OBJECTS_DIR)/klayout_tech.lef
@@ -1891,37 +1891,37 @@ ifeq ($(KLAYOUT_ENV_VAR_IN_PATH),valid)
         SC_LEF_RELATIVE_PATH="$$\(env('FLOW_HOME')\)/$(shell realpath --relative-to=$(FLOW_HOME) $(SC_LEF))"; \
         OTHER_LEFS_RELATIVE_PATHS=$$(echo "$(foreach file, $(OBJECTS_DIR)/klayout_tech.lef $(ADDITIONAL_LEFS),<lef-files>$$(realpath --relative-to=$(RESULTS_DIR) $(file))</lef-files>)"); \
 
-================================== My Note ==================================
-=    Replace the entire <lef-files>...</lef-files> section                  =
-=    in the KLayout tech file with a new <lef-files> tag                    =
-=    containing SC_LEF_RELATIVE_PATH and OTHER_LEFS_RELATIVE_PATHS.         =
-=    Use 's,,,g' instead of 's///g' to avoid escaping forward slashes.      =
-=    The string uses single quotes '...'                                    =
-=    to protect most of the sed command from shell expansion,               =
-=    and double quotes "..." inside                                         =
-=    to allow Makefile or shell variables (like $$VAR) to be expanded.      =
-=    This combination ensures                                               =
-=    that fixed parts of the command are passed literally,                  =
-=    while variables are evaluated and inserted dynamically.                =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Replace the entire <lef-files>...</lef-files> section                                                                                               =
+=    in the KLayout tech file with a new <lef-files> tag                                                                                                 =
+=    containing SC_LEF_RELATIVE_PATH and OTHER_LEFS_RELATIVE_PATHS.                                                                                      =
+=    Use 's,,,g' instead of 's///g' to avoid escaping forward slashes.                                                                                   =
+=    The string uses single quotes '...'                                                                                                                 =
+=    to protect most of the sed command from shell expansion,                                                                                            =
+=    and double quotes "..." inside                                                                                                                      =
+=    to allow Makefile or shell variables (like $$VAR) to be expanded.                                                                                   =
+=    This combination ensures                                                                                                                            =
+=    that fixed parts of the command are passed literally,                                                                                               =
+=    while variables are evaluated and inserted dynamically.                                                                                             =
+==========================================================================================================================================================
         sed 's,<lef-files>.*</lef-files>,<lef-files>'"$$SC_LEF_RELATIVE_PATH"'</lef-files>'"$$OTHER_LEFS_RELATIVE_PATHS"',g' $(KLAYOUT_TECH_FILE) > $(OBJECTS_DIR)/klayout.lyt
 else
         sed 's,<lef-files>.*</lef-files>,$(foreach file, $(OBJECTS_DIR)/klayout_tech.lef $(SC_LEF) $(ADDITIONAL_LEFS),<lef-files>$(shell realpath --relative-to=$(RESULTS_DIR) $(file))</lef-files>),g' $(KLAYOUT_TECH_FILE) > $(OBJECTS_DIR)/klayout.lyt
 endif
 
-================================== My Note ==================================
-=    'sed' with '>' is used to redirect                                     =
-=    the output of the sed command to a new file,                           =
-=    instead of modifying the original file.                                =
-=    It processes the input file, applies the sed transformations,          =
-=    and writes the result to the specified output file.                    =
-=    'sed -i' is used to modify the file directly,                          =
-=    without creating a new file.                                           =
-=    The '-i' option means "in-place"                                       =
-=    so the original file is edited,                                        =
-=    and the changes are applied directly to it.                            =
-=    No output is generated unless redirected.                              =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    'sed' with '>' is used to redirect                                                                                                                  =
+=    the output of the sed command to a new file,                                                                                                        =
+=    instead of modifying the original file.                                                                                                             =
+=    It processes the input file, applies the sed transformations,                                                                                       =
+=    and writes the result to the specified output file.                                                                                                 =
+=    'sed -i' is used to modify the file directly,                                                                                                       =
+=    without creating a new file.                                                                                                                        =
+=    The '-i' option means "in-place"                                                                                                                    =
+=    so the original file is edited,                                                                                                                     =
+=    and the changes are applied directly to it.                                                                                                         =
+=    No output is generated unless redirected.                                                                                                           =
+==========================================================================================================================================================
         sed -i 's,<map-file>.*</map-file>,$(foreach file, $(FLOW_HOME)/platforms/$(PLATFORM)/*map,<map-file>$(shell realpath $(file))</map-file>),g' $(OBJECTS_DIR)/klayout.lyt
 
 $(OBJECTS_DIR)/klayout_wrap.lyt: $(KLAYOUT_TECH_FILE) $(OBJECTS_DIR)/klayout_tech.lef
@@ -1930,28 +1930,28 @@ $(OBJECTS_DIR)/klayout_wrap.lyt: $(KLAYOUT_TECH_FILE) $(OBJECTS_DIR)/klayout_tec
 .PHONY: do-klayout_wrap
 do-klayout_wrap:
 
-================================== My Note ==================================
-=    Use `sed` to replace the entire <lef-files>...</lef-files> block       =
-=    in the input KLayout tech file with a new set of <lef-files> entries,  =
-=    one for each LEF file in the list.                                     =
-=    Each file path is converted to a path                                  =
-=    relative to $(OBJECTS_DIR)/def using `realpath`.                       =
-=    The output is written to klayout_wrap.lyt.                             =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Use `sed` to replace the entire <lef-files>...</lef-files> block                                                                                    =
+=    in the input KLayout tech file with a new set of <lef-files> entries,                                                                               =
+=    one for each LEF file in the list.                                                                                                                  =
+=    Each file path is converted to a path                                                                                                               =
+=    relative to $(OBJECTS_DIR)/def using `realpath`.                                                                                                    =
+=    The output is written to klayout_wrap.lyt.                                                                                                          =
+==========================================================================================================================================================
         sed 's,<lef-files>.*</lef-files>,$(foreach file, $(OBJECTS_DIR)/klayout_tech.lef $(WRAP_LEFS),<lef-files>$(shell realpath --relative-to=$(OBJECTS_DIR)/def $(file))</lef-files>),g' $(KLAYOUT_TECH_FILE) > $(OBJECTS_DIR)/klayout_wrap.lyt
 
 $(WRAPPED_LEFS):
         mkdir -p $(OBJECTS_DIR)/lef $(OBJECTS_DIR)/def
 
-================================== My Note ==================================
-=    Run the wrap.tcl script to generate a wrapped LEF file.                =
-=    -cfg specifies the configuration file used by the script.              =
-=    -macro provides the path to the original LEF file                      =
-=    that should be wrapped.                                                =
-=    The $(filter ...) expression extracts the correct LEF file path        =
-=    from the WRAP_LEFS list,                                               =
-=    by matching it to the current target name (with '_mod' removed).       =
-=============================================================================
+======================================================================== My  Note ========================================================================
+=    Run the wrap.tcl script to generate a wrapped LEF file.                                                                                             =
+=    -cfg specifies the configuration file used by the script.                                                                                           =
+=    -macro provides the path to the original LEF file                                                                                                   =
+=    that should be wrapped.                                                                                                                             =
+=    The $(filter ...) expression extracts the correct LEF file path                                                                                     =
+=    from the WRAP_LEFS list,                                                                                                                            =
+=    by matching it to the current target name (with '_mod' removed).                                                                                    =
+==========================================================================================================================================================
         util/cell-veneer/wrap.tcl -cfg $(WRAP_CFG) -macro $(filter %$(notdir $(@:_mod.lef=.lef)),$(WRAP_LEFS))
         mv $(notdir $@) $@
         mv $(notdir $(@:lef=def)) $(dir $@)../def/$(notdir $(@:lef=def))
@@ -2001,20 +2001,156 @@ yosys-dependencies: $(YOSYS_DEPENDENCIES)
 .PHONY: do-yosys
 do-yosys: $(DONT_USE_SC_LIB)
         $(SCRIPTS_DIR)/synth.sh $(SYNTH_SCRIPT) $(LOG_DIR)/1_1_yosys.log
-#############################################################################
-# ⬇️ Inline content from synth.sh         (for analysis purpose only)   ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from synth.sh                                                                                      (for analysis purpose only)   ⬇️ #
+##########################################################################################################################################################
     #!/bin/bash
     set -u -eo pipefail
     mkdir -p $RESULTS_DIR $LOG_DIR $REPORTS_DIR $OBJECTS_DIR
     eval "$TIME_CMD $YOSYS_EXE $YOSYS_FLAGS -c $1" 2>&1 | tee $(realpath $2)
-#############################################################################
-# ⬇️ Inline content from synth.tcl        (for analysis purpose only)   ⬇️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬇️ Inline content from synth.tcl                                                                                     (for analysis purpose only)   ⬇️ #
+##########################################################################################################################################################
         set ::env(VERILOG_FILES) $::env(RESULTS_DIR)/1_synth.rtlil
         
         source $::env(SCRIPTS_DIR)/synth_preamble.tcl
-        
+##########################################################################################################################################################
+# ⬇️ Inline content from synth_preamble.tc(for analysis purpose only)                                                                                ⬇️ #
+##########################################################################################################################################################
+yosys -import
+
+source $::env(SCRIPTS_DIR)/util.tcl
+erase_non_stage_variables synth
+
+# If using a cached, gate level netlist, then copy over to the results dir with
+# preserve timestamps flag set. If you don't, subsequent runs will cause the
+# floorplan step to be re-executed.
+if {[env_var_exists_and_non_empty SYNTH_NETLIST_FILES]} {
+  if {[llength $::env(SYNTH_NETLIST_FILES)] == 1} {
+    log_cmd exec cp -p $::env(SYNTH_NETLIST_FILES) $::env(RESULTS_DIR)/1_1_yosys.v
+  } else {
+    # The date should be the most recent date of the files, but to
+    # keep things simple we just use the creation date
+    log_cmd exec cat {*}$::env(SYNTH_NETLIST_FILES) > $::env(RESULTS_DIR)/1_1_yosys.v
+  }
+  log_cmd exec cp -p $::env(SDC_FILE) $::env(RESULTS_DIR)/1_synth.sdc
+  if {[env_var_exists_and_non_empty CACHED_REPORTS]} {
+    log_cmd exec cp -p {*}$::env(CACHED_REPORTS) $::env(REPORTS_DIR)/.
+  }
+  exit
+}
+
+# Setup verilog include directories
+set vIdirsArgs ""
+if {[env_var_exists_and_non_empty VERILOG_INCLUDE_DIRS]} {
+  foreach dir $::env(VERILOG_INCLUDE_DIRS) {
+    lappend vIdirsArgs "-I$dir"
+  }
+  set vIdirsArgs [join $vIdirsArgs]
+}
+
+
+# Read verilog files
+foreach file $::env(VERILOG_FILES) {
+  if {[file extension $file] == ".rtlil"} {
+    read_rtlil $file
+  } elseif {[file extension $file] == ".json"} {
+    read_json $file
+  } else {
+    read_verilog -defer -sv {*}$vIdirsArgs $file
+  }
+}
+
+source $::env(SCRIPTS_DIR)/synth_stdcells.tcl
+
+# Read platform specific mapfile for OPENROAD_CLKGATE cells
+if {[env_var_exists_and_non_empty CLKGATE_MAP_FILE]} {
+  read_verilog -defer $::env(CLKGATE_MAP_FILE)
+}
+
+if {[env_var_exists_and_non_empty SYNTH_BLACKBOXES]} {
+  hierarchy -check -top $::env(DESIGN_NAME)
+  foreach m $::env(SYNTH_BLACKBOXES) {
+    blackbox $m
+  }
+}
+
+if {$::env(ABC_AREA)} {
+  puts "Using ABC area script."
+  set abc_script $::env(SCRIPTS_DIR)/abc_area.script
+} else {
+  puts "Using ABC speed script."
+  set abc_script $::env(SCRIPTS_DIR)/abc_speed.script
+}
+
+# Technology mapping for cells
+# ABC supports multiple liberty files, but the hook from Yosys to ABC doesn't
+set abc_args [list -script $abc_script \
+      -liberty $::env(DONT_USE_SC_LIB) \
+      -constr $::env(OBJECTS_DIR)/abc.constr]
+
+# Exclude dont_use cells. This includes macros that are specified via
+# LIB_FILES and ADDITIONAL_LIBS that are included in LIB_FILES.
+if {[env_var_exists_and_non_empty DONT_USE_CELLS]} {
+  foreach cell $::env(DONT_USE_CELLS) {
+    lappend abc_args -dont_use $cell
+  }
+}
+
+if {[env_var_exists_and_non_empty SDC_FILE_CLOCK_PERIOD]} {
+  puts "Extracting clock period from SDC file: $::env(SDC_FILE_CLOCK_PERIOD)"
+  set fp [open $::env(SDC_FILE_CLOCK_PERIOD) r]
+  set clock_period [string trim [read $fp]]
+  if {$clock_period != ""} {
+    puts "Setting clock period to $clock_period"
+    lappend abc_args -D $clock_period
+  }
+  close $fp
+}
+
+# Create argument list for stat
+set stat_libs ""
+foreach lib $::env(DONT_USE_LIBS) {
+  append stat_libs "-liberty $lib "
+}
+
+set constr [open $::env(OBJECTS_DIR)/abc.constr w]
+puts $constr "set_driving_cell $::env(ABC_DRIVER_CELL)"
+puts $constr "set_load $::env(ABC_LOAD_IN_FF)"
+close $constr
+
+proc convert_liberty_areas {} {
+  cellmatch -derive_luts =A:liberty_cell
+  # find a reference nand2 gate
+  set found_cell ""
+  set found_cell_area ""
+  # iterate over all cells with a nand2 signature
+  foreach cell [tee -q -s result.string select -list-mod =*/a:lut=4'b0111 %m] {
+    if {! [rtlil::has_attr -mod $cell area]} {
+      puts "Cell $cell missing area information"
+      continue
+    }
+    set area [rtlil::get_attr -string -mod $cell area]
+    if {$found_cell == "" || [expr $area < $found_cell_area]} {
+      set found_cell $cell
+      set found_cell_area $area
+    }
+  }
+  if {$found_cell == ""} {
+    error "reference nand2 cell not found"
+  }
+
+  # convert the area on all Liberty cells to a gate number equivalent
+  foreach box [tee -q -s result.string select -list-mod =A:area =A:liberty_cell %i] {
+    set area [rtlil::get_attr -mod -string $box area]
+    set gate_eq [expr int($area / $found_cell_area)]
+    rtlil::set_attr -mod -uint $box gate_cost_equivalent $gate_eq
+  }
+}
+##########################################################################################################################################################
+# ⬆️ End of inline synth_preamble.tcl                                                                                                                ⬆️ #
+##########################################################################################################################################################
+
         hierarchy -check -top $::env(DESIGN_NAME)
         
         if { [env_var_equals SYNTH_GUT 1] } {
@@ -2161,13 +2297,13 @@ do-yosys: $(DONT_USE_SC_LIB)
         # .sdc file after synthesis. For now, just copy the input .sdc file,
         # making synthesis more consistent with other stages.
         log_cmd exec cp $::env(SDC_FILE) $::env(RESULTS_DIR)/1_synth.sdc
-#############################################################################
-# ⬆️ End of inline synth.tcl                                            ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline synth.tcl                                                                                                                         ⬆️ #
+##########################################################################################################################################################
 
-#############################################################################
-# ⬆️ End of inline synth.sh                                             ⬆️ #
-#############################################################################
+##########################################################################################################################################################
+# ⬆️ End of inline synth.sh                                                                                                                          ⬆️ #
+##########################################################################################################################################################
 
 .PHONY: do-yosys-canonicalize
 do-yosys-canonicalize: yosys-dependencies $(DONT_USE_SC_LIB)
