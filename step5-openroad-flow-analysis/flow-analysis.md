@@ -2025,6 +2025,15 @@ do-yosys: $(DONT_USE_SC_LIB)
 ###############################################################################################################################
                 proc log_cmd {cmd args} {
                   # log the command, escape arguments with spaces
+
+=========================================================== My Note ===========================================================
+=    Construct a command string with arguments safely formatted for logging.                                                  =
+=    For each argument in $args:                                                                                              =
+=      - If the argument contains a space, wrap it in double quotes.                                                          =
+=      - Otherwise, leave it as-is.                                                                                           =
+=    Then join all arguments into a single string, separated by spaces, and append to $cmd.                                   =
+=    The final string is stored in the variable 'log_cmd'.                                                                    =
+===============================================================================================================================
                   set log_cmd "$cmd[join [lmap arg $args {format " %s" [expr {[string match {* *} $arg] ? "\"$arg\"" : "$arg"}]}] ""]"
                   puts $log_cmd
                   set start [clock seconds]
@@ -2040,6 +2049,17 @@ do-yosys: $(DONT_USE_SC_LIB)
                 proc fast_route {} {
                   if {[env_var_exists_and_non_empty FASTROUTE_TCL]} {
                     source $::env(FASTROUTE_TCL)
+##########################################################################################################################################################
+# ⬇️ Inline content from fastroute.tcl (for analysis purpose only)                                                                                   ⬇️ #
+##########################################################################################################################################################
+                    set_global_routing_layer_adjustment $::env(MIN_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER) 0.2
+                    
+                    set_routing_layers -clock $::env(MIN_CLK_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER)
+                    set_routing_layers -signal $::env(MIN_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER)
+##########################################################################################################################################################
+# ⬆️ End of inline fastroute.tcl                                                                                                                     ⬆️ #
+##########################################################################################################################################################
+
                   } else {
                     set_global_routing_layer_adjustment $::env(MIN_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER) $::env(ROUTING_LAYER_ADJUSTMENT)
                     set_routing_layers -signal $::env(MIN_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER)
