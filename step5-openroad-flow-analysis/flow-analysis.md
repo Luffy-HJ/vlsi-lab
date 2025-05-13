@@ -206,7 +206,7 @@ export FLOW_HOME
 
 include $(FLOW_HOME)/scripts/variables.mk
 ###############################################################################################################################
-# ⬇️ Inline content from variables.mk                                                   (for analysis purpose only)       ⬇️ #
+# ⬇️ Inline content from variables.mk (for analysis purpose only)                                                         ⬇️ #
 ###############################################################################################################################
     # Sets up ORFS variables using make variable support, relying
     # on makefile features such as defaults, forward references,
@@ -441,7 +441,7 @@ include $(FLOW_HOME)/scripts/variables.mk
     # is no way to escape space in defaults.py and get "foreach" to work.
     $(foreach line,$(shell $(SCRIPTS_DIR)/defaults.py),$(eval export $(subst __SPACE__, ,$(line))))
 ###############################################################################################################################
-# ⬇️ Inline content from defaults.py                                                     (for analysis purpose only)      ⬇️ #
+# ⬇️ Inline content from defaults.py (for analysis purpose only)                                                          ⬇️ #
 ###############################################################################################################################
         #!/usr/bin/env python3
         
@@ -454,7 +454,7 @@ include $(FLOW_HOME)/scripts/variables.mk
         with open(yaml_path, "r") as file:
             data = yaml.safe_load(file)
 ###############################################################################################################################
-# ⬇️ Inline content from variables.yaml                                                     (for analysis purpose only)   ⬇️ #
+# ⬇️ Inline content from variables.yaml (for analysis purpose only)                                                       ⬇️ #
 ###############################################################################################################################
 =========================================================== My Note ===========================================================
 =    "TNS_END_PERCENT": {                                                                                                     =
@@ -1688,7 +1688,7 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
 ===============================================================================================================================
         $(UTILS_DIR)/preprocessLib.py -i $^ -o $@
 ###############################################################################################################################
-# ⬇️ Inline content from preprocessLib.py                                                     (for analysis purpose only) ⬇️ #
+# ⬇️ Inline content from preprocessLib.py (for analysis purpose only)                                                     ⬇️ #
 ###############################################################################################################################
     #!/usr/bin/env python3
     import re
@@ -1768,7 +1768,7 @@ $(DONT_USE_LIBS): $$(filter %$$(@F) %$$(@F).gz,$(LIB_FILES))
 $(OBJECTS_DIR)/lib/merged.lib: $(DONT_USE_LIBS)
         $(UTILS_DIR)/mergeLib.pl $(PLATFORM)_merged $(DONT_USE_LIBS) > $@
 ###############################################################################################################################
-# ⬇️ Inline content from mergeLib.pl                                                          (for analysis purpose only) ⬇️ #
+# ⬇️ Inline content from mergeLib.pl (for analysis purpose only)                                                          ⬇️ #
 ###############################################################################################################################
     #!/usr/bin/env perl
     
@@ -2002,151 +2002,334 @@ yosys-dependencies: $(YOSYS_DEPENDENCIES)
 do-yosys: $(DONT_USE_SC_LIB)
         $(SCRIPTS_DIR)/synth.sh $(SYNTH_SCRIPT) $(LOG_DIR)/1_1_yosys.log
 ###############################################################################################################################
-# ⬇️ Inline content from synth.sh                                                           (for analysis purpose only)   ⬇️ #
+# ⬇️ Inline content from synth.sh (for analysis purpose only)                                                             ⬇️ #
 ###############################################################################################################################
     #!/bin/bash
     set -u -eo pipefail
     mkdir -p $RESULTS_DIR $LOG_DIR $REPORTS_DIR $OBJECTS_DIR
     eval "$TIME_CMD $YOSYS_EXE $YOSYS_FLAGS -c $1" 2>&1 | tee $(realpath $2)
 ###############################################################################################################################
-# ⬇️ Inline content from synth.tcl                                                          (for analysis purpose only)   ⬇️ #
+# ⬇️ Inline content from synth.tcl (for analysis purpose only)                                                            ⬇️ #
 ###############################################################################################################################
         set ::env(VERILOG_FILES) $::env(RESULTS_DIR)/1_synth.rtlil
         
         source $::env(SCRIPTS_DIR)/synth_preamble.tcl
 ###############################################################################################################################
-# ⬇️ Inline content from synth_preamble.tc(for analysis purpose only)                                                     ⬇️ #
+# ⬇️ Inline content from synth_preamble.tcl (for analysis purpose only)                                                   ⬇️ #
 ###############################################################################################################################
-yosys -import
+            yosys -import
+            
+            source $::env(SCRIPTS_DIR)/util.tcl
+###############################################################################################################################
+# ⬇️ Inline content from util.tcl (for analysis purpose only)                                                             ⬇️ #
+###############################################################################################################################
+                proc log_cmd {cmd args} {
+                  # log the command, escape arguments with spaces
+                  set log_cmd "$cmd[join [lmap arg $args {format " %s" [expr {[string match {* *} $arg] ? "\"$arg\"" : "$arg"}]}] ""]"
+                  puts $log_cmd
+                  set start [clock seconds]
+                  $cmd {*}$args
+                  set time [expr {[clock seconds] - $start}]
+                  if {$time >= 5} {
+                    # Ideally we'd use a single line, but the command can output text
+                    # and we don't want to mix it with the log, so output the time it took afterwards.
+                    puts "Took $time seconds: $log_cmd"
+                  }
+                }
+                
+                proc fast_route {} {
+                  if {[env_var_exists_and_non_empty FASTROUTE_TCL]} {
+                    source $::env(FASTROUTE_TCL)
+                  } else {
+                    set_global_routing_layer_adjustment $::env(MIN_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER) $::env(ROUTING_LAYER_ADJUSTMENT)
+                    set_routing_layers -signal $::env(MIN_ROUTING_LAYER)-$::env(MAX_ROUTING_LAYER)
+                    if {[env_var_exists_and_non_empty MACRO_EXTENSION]} {
+                      set_macro_extension $::env(MACRO_EXTENSION)
+                    }
+                  }
+                }
+                
+                proc repair_timing_helper { {hold_margin 1} } {
+                  set additional_args "-verbose"
+                  append_env_var additional_args SETUP_SLACK_MARGIN -setup_margin 1
+                  if {$hold_margin || $::env(HOLD_SLACK_MARGIN) < 0} {
+                    append_env_var additional_args HOLD_SLACK_MARGIN -hold_margin 1
+                  }
+                  append_env_var additional_args TNS_END_PERCENT -repair_tns 1
+                  append_env_var additional_args SKIP_PIN_SWAP -skip_pin_swap 0
+                  append_env_var additional_args SKIP_GATE_CLONING -skip_gate_cloning 0
+                  append_env_var additional_args SKIP_BUFFER_REMOVAL -skip_buffer_removal 0
+                  append_env_var additional_args SKIP_LAST_GASP -skip_last_gasp 0
+                  append_env_var additional_args MATCH_CELL_FOOTPRINT -match_cell_footprint 0
+                  log_cmd repair_timing {*}$additional_args
+                }
+                
+                proc repair_design_helper {} {
+                  puts "Perform buffer insertion and gate resizing..."
+                
+                  set additional_args "-verbose"
+                  append_env_var additional_args CAP_MARGIN -cap_margin 1
+                  append_env_var additional_args SLEW_MARGIN -slew_margin 1
+                  append_env_var additional_args MATCH_CELL_FOOTPRINT -match_cell_footprint 0
+                  log_cmd repair_design {*}$additional_args
+                }
+                
+                proc recover_power_helper {} {
+                  if { $::env(RECOVER_POWER) == 0 } {
+                    return
+                  }
+                  puts "Downsizing/switching to higher Vt for non critical gates for power recovery"
+                  puts "Percent of paths optimized $::env(RECOVER_POWER)"
+                  report_tns
+                  report_wns
+                  report_power
+                  set additional_args "-verbose"
+                  append_env_var additional_args RECOVER_POWER -recover_power 1
+                  append_env_var additional_args MATCH_CELL_FOOTPRINT -match_cell_footprint 0
+                  log_cmd repair_timing {*}$additional_args
+                  report_tns
+                  report_wns
+                  report_power
+                }
+                
+                proc extract_stage {input_file} {
+                  if {![regexp {/([0-9])_(([0-9])_)?} $input_file match num1 _ num2]} {
+                    puts "Error: Could not determine design stage from $input_file"
+                    exit 1
+                  }
+                  lappend number_groups $num1
+                  if {$num2!=""} {
+                      lappend number_groups $num2
+                  } else {
+                    lappend number_groups "0"
+                  }
+                }
+                
+                proc find_sdc_file {input_file} {
+                  # canonicalize input file, sometimes it is called with an input
+                  # file relative to $::env(RESULTS_DIR), other times with
+                  # an absolute path
+                  if { ![file exists $input_file] } {
+                    set input_file [file join $::env(RESULTS_DIR) $input_file]
+                  }
+                  set input_file [file normalize $input_file]
+                
+                  set stage [extract_stage $input_file]
+                  set design_stage [lindex $stage 0]
+                  set sdc_file ""
+                
+                  set exact_sdc [string map {.odb .sdc} $input_file]
+                  set sdc_files [glob -nocomplain -directory $::env(RESULTS_DIR) -types f "\[1-9+\]_\[1-9_A-Za-z\]*\.sdc"]
+                  set sdc_files [lsort -decreasing -dictionary $sdc_files]
+                  set sdc_files [lmap file $sdc_files {file normalize $file}]
+                  foreach name $sdc_files {
+                    if {[lindex [lsort -decreasing -dictionary [list $name $exact_sdc] ] 0] == $exact_sdc} {
+                      set sdc_file $name
+                      break
+                    }
+                  }
+                  return [list $design_stage $sdc_file]
+                }
+                
+                proc env_var_equals {env_var value} {
+                    return [expr {[info exists ::env($env_var)] && $::env($env_var) == $value}]
+                }
+                
+                proc env_var_exists_and_non_empty {env_var} {
+                    return [expr {[info exists ::env($env_var)] && ![string equal $::env($env_var) ""]}]
+                }
+                
+                proc append_env_var {list_name var_name prefix has_arg} {
+                  upvar $list_name list
+                  if {(!$has_arg && [env_var_equals $var_name 1]) ||
+                      ($has_arg && [env_var_exists_and_non_empty $var_name])} {
+                    lappend list $prefix
+                    if {$has_arg} {
+                      lappend list $::env($var_name)
+                    }
+                  }
+                }
+                
+                proc find_macros {} {
+                  set macros ""
+                
+                  set db [ord::get_db]
+                  set block [[$db getChip] getBlock]
+                  foreach inst [$block getInsts] {
+                    set inst_master [$inst getMaster]
+                
+                    # BLOCK means MACRO cells
+                    if { [string match [$inst_master getType] "BLOCK"] } {
+                      append macros " " $inst
+                    }
+                  }
+                  return $macros
+                }
+                
+                proc erase_non_stage_variables {stage_name} {
+                  # "$::env(SCRIPTS_DIR)/stage_variables.py stage_name" returns list of
+                  # variables to erase.
+                  #
+                  # Tcl yaml package can't be imported in the sta/openroad environment:
+                  #
+                  # https://github.com/The-OpenROAD-Project/OpenROAD/issues/5875
+                  set variables [exec $::env(SCRIPTS_DIR)/non_stage_variables.py $stage_name]
+                  foreach var $variables {
+                    if {[info exists ::env($var)]} {
+                      unset ::env($var)
+                    }
+                  }
+                }
+                
+                set global_route_congestion_report $::env(REPORTS_DIR)/congestion.rpt
+                
+                proc place_density_with_lb_addon {} {
+                  if {[env_var_exists_and_non_empty PLACE_DENSITY_LB_ADDON]} {
+                    # check the lower boundary of the PLACE_DENSITY and add PLACE_DENSITY_LB_ADDON
+                    set place_density_lb [gpl::get_global_placement_uniform_density \
+                    -pad_left $::env(CELL_PAD_IN_SITES_GLOBAL_PLACEMENT) \
+                    -pad_right $::env(CELL_PAD_IN_SITES_GLOBAL_PLACEMENT)]
+                    set place_density [expr $place_density_lb + ((1.0 - $place_density_lb) * $::env(PLACE_DENSITY_LB_ADDON)) + 0.01]
+                    if {$place_density > 1.0} {
+                      utl::error FLW 24 "Place density exceeds 1.0 (current PLACE_DENSITY_LB_ADDON = $::env(PLACE_DENSITY_LB_ADDON)). Please check if the value of PLACE_DENSITY_LB_ADDON is between 0 and 0.99."
+                    }
+                    puts "Placement density is $place_density, computed from PLACE_DENSITY_LB_ADDON $::env(PLACE_DENSITY_LB_ADDON) and lower bound $place_density_lb"
+                  } else {
+                    set place_density $::env(PLACE_DENSITY)
+                  }
+                  return $place_density
+                }
+###############################################################################################################################
+# ⬆️ End of inline util.tcl                                                                                               ⬆️ #
+###############################################################################################################################
 
-source $::env(SCRIPTS_DIR)/util.tcl
-erase_non_stage_variables synth
-
-# If using a cached, gate level netlist, then copy over to the results dir with
-# preserve timestamps flag set. If you don't, subsequent runs will cause the
-# floorplan step to be re-executed.
-if {[env_var_exists_and_non_empty SYNTH_NETLIST_FILES]} {
-  if {[llength $::env(SYNTH_NETLIST_FILES)] == 1} {
-    log_cmd exec cp -p $::env(SYNTH_NETLIST_FILES) $::env(RESULTS_DIR)/1_1_yosys.v
-  } else {
-    # The date should be the most recent date of the files, but to
-    # keep things simple we just use the creation date
-    log_cmd exec cat {*}$::env(SYNTH_NETLIST_FILES) > $::env(RESULTS_DIR)/1_1_yosys.v
-  }
-  log_cmd exec cp -p $::env(SDC_FILE) $::env(RESULTS_DIR)/1_synth.sdc
-  if {[env_var_exists_and_non_empty CACHED_REPORTS]} {
-    log_cmd exec cp -p {*}$::env(CACHED_REPORTS) $::env(REPORTS_DIR)/.
-  }
-  exit
-}
-
-# Setup verilog include directories
-set vIdirsArgs ""
-if {[env_var_exists_and_non_empty VERILOG_INCLUDE_DIRS]} {
-  foreach dir $::env(VERILOG_INCLUDE_DIRS) {
-    lappend vIdirsArgs "-I$dir"
-  }
-  set vIdirsArgs [join $vIdirsArgs]
-}
-
-
-# Read verilog files
-foreach file $::env(VERILOG_FILES) {
-  if {[file extension $file] == ".rtlil"} {
-    read_rtlil $file
-  } elseif {[file extension $file] == ".json"} {
-    read_json $file
-  } else {
-    read_verilog -defer -sv {*}$vIdirsArgs $file
-  }
-}
-
-source $::env(SCRIPTS_DIR)/synth_stdcells.tcl
-
-# Read platform specific mapfile for OPENROAD_CLKGATE cells
-if {[env_var_exists_and_non_empty CLKGATE_MAP_FILE]} {
-  read_verilog -defer $::env(CLKGATE_MAP_FILE)
-}
-
-if {[env_var_exists_and_non_empty SYNTH_BLACKBOXES]} {
-  hierarchy -check -top $::env(DESIGN_NAME)
-  foreach m $::env(SYNTH_BLACKBOXES) {
-    blackbox $m
-  }
-}
-
-if {$::env(ABC_AREA)} {
-  puts "Using ABC area script."
-  set abc_script $::env(SCRIPTS_DIR)/abc_area.script
-} else {
-  puts "Using ABC speed script."
-  set abc_script $::env(SCRIPTS_DIR)/abc_speed.script
-}
-
-# Technology mapping for cells
-# ABC supports multiple liberty files, but the hook from Yosys to ABC doesn't
-set abc_args [list -script $abc_script \
-      -liberty $::env(DONT_USE_SC_LIB) \
-      -constr $::env(OBJECTS_DIR)/abc.constr]
-
-# Exclude dont_use cells. This includes macros that are specified via
-# LIB_FILES and ADDITIONAL_LIBS that are included in LIB_FILES.
-if {[env_var_exists_and_non_empty DONT_USE_CELLS]} {
-  foreach cell $::env(DONT_USE_CELLS) {
-    lappend abc_args -dont_use $cell
-  }
-}
-
-if {[env_var_exists_and_non_empty SDC_FILE_CLOCK_PERIOD]} {
-  puts "Extracting clock period from SDC file: $::env(SDC_FILE_CLOCK_PERIOD)"
-  set fp [open $::env(SDC_FILE_CLOCK_PERIOD) r]
-  set clock_period [string trim [read $fp]]
-  if {$clock_period != ""} {
-    puts "Setting clock period to $clock_period"
-    lappend abc_args -D $clock_period
-  }
-  close $fp
-}
-
-# Create argument list for stat
-set stat_libs ""
-foreach lib $::env(DONT_USE_LIBS) {
-  append stat_libs "-liberty $lib "
-}
-
-set constr [open $::env(OBJECTS_DIR)/abc.constr w]
-puts $constr "set_driving_cell $::env(ABC_DRIVER_CELL)"
-puts $constr "set_load $::env(ABC_LOAD_IN_FF)"
-close $constr
-
-proc convert_liberty_areas {} {
-  cellmatch -derive_luts =A:liberty_cell
-  # find a reference nand2 gate
-  set found_cell ""
-  set found_cell_area ""
-  # iterate over all cells with a nand2 signature
-  foreach cell [tee -q -s result.string select -list-mod =*/a:lut=4'b0111 %m] {
-    if {! [rtlil::has_attr -mod $cell area]} {
-      puts "Cell $cell missing area information"
-      continue
-    }
-    set area [rtlil::get_attr -string -mod $cell area]
-    if {$found_cell == "" || [expr $area < $found_cell_area]} {
-      set found_cell $cell
-      set found_cell_area $area
-    }
-  }
-  if {$found_cell == ""} {
-    error "reference nand2 cell not found"
-  }
-
-  # convert the area on all Liberty cells to a gate number equivalent
-  foreach box [tee -q -s result.string select -list-mod =A:area =A:liberty_cell %i] {
-    set area [rtlil::get_attr -mod -string $box area]
-    set gate_eq [expr int($area / $found_cell_area)]
-    rtlil::set_attr -mod -uint $box gate_cost_equivalent $gate_eq
-  }
-}
+            erase_non_stage_variables synth
+            
+            # If using a cached, gate level netlist, then copy over to the results dir with
+            # preserve timestamps flag set. If you don't, subsequent runs will cause the
+            # floorplan step to be re-executed.
+            if {[env_var_exists_and_non_empty SYNTH_NETLIST_FILES]} {
+              if {[llength $::env(SYNTH_NETLIST_FILES)] == 1} {
+                log_cmd exec cp -p $::env(SYNTH_NETLIST_FILES) $::env(RESULTS_DIR)/1_1_yosys.v
+              } else {
+                # The date should be the most recent date of the files, but to
+                # keep things simple we just use the creation date
+                log_cmd exec cat {*}$::env(SYNTH_NETLIST_FILES) > $::env(RESULTS_DIR)/1_1_yosys.v
+              }
+              log_cmd exec cp -p $::env(SDC_FILE) $::env(RESULTS_DIR)/1_synth.sdc
+              if {[env_var_exists_and_non_empty CACHED_REPORTS]} {
+                log_cmd exec cp -p {*}$::env(CACHED_REPORTS) $::env(REPORTS_DIR)/.
+              }
+              exit
+            }
+            
+            # Setup verilog include directories
+            set vIdirsArgs ""
+            if {[env_var_exists_and_non_empty VERILOG_INCLUDE_DIRS]} {
+              foreach dir $::env(VERILOG_INCLUDE_DIRS) {
+                lappend vIdirsArgs "-I$dir"
+              }
+              set vIdirsArgs [join $vIdirsArgs]
+            }
+            
+            
+            # Read verilog files
+            foreach file $::env(VERILOG_FILES) {
+              if {[file extension $file] == ".rtlil"} {
+                read_rtlil $file
+              } elseif {[file extension $file] == ".json"} {
+                read_json $file
+              } else {
+                read_verilog -defer -sv {*}$vIdirsArgs $file
+              }
+            }
+            
+            source $::env(SCRIPTS_DIR)/synth_stdcells.tcl
+            
+            # Read platform specific mapfile for OPENROAD_CLKGATE cells
+            if {[env_var_exists_and_non_empty CLKGATE_MAP_FILE]} {
+              read_verilog -defer $::env(CLKGATE_MAP_FILE)
+            }
+            
+            if {[env_var_exists_and_non_empty SYNTH_BLACKBOXES]} {
+              hierarchy -check -top $::env(DESIGN_NAME)
+              foreach m $::env(SYNTH_BLACKBOXES) {
+                blackbox $m
+              }
+            }
+            
+            if {$::env(ABC_AREA)} {
+              puts "Using ABC area script."
+              set abc_script $::env(SCRIPTS_DIR)/abc_area.script
+            } else {
+              puts "Using ABC speed script."
+              set abc_script $::env(SCRIPTS_DIR)/abc_speed.script
+            }
+            
+            # Technology mapping for cells
+            # ABC supports multiple liberty files, but the hook from Yosys to ABC doesn't
+            set abc_args [list -script $abc_script \
+                  -liberty $::env(DONT_USE_SC_LIB) \
+                  -constr $::env(OBJECTS_DIR)/abc.constr]
+            
+            # Exclude dont_use cells. This includes macros that are specified via
+            # LIB_FILES and ADDITIONAL_LIBS that are included in LIB_FILES.
+            if {[env_var_exists_and_non_empty DONT_USE_CELLS]} {
+              foreach cell $::env(DONT_USE_CELLS) {
+                lappend abc_args -dont_use $cell
+              }
+            }
+            
+            if {[env_var_exists_and_non_empty SDC_FILE_CLOCK_PERIOD]} {
+              puts "Extracting clock period from SDC file: $::env(SDC_FILE_CLOCK_PERIOD)"
+              set fp [open $::env(SDC_FILE_CLOCK_PERIOD) r]
+              set clock_period [string trim [read $fp]]
+              if {$clock_period != ""} {
+                puts "Setting clock period to $clock_period"
+                lappend abc_args -D $clock_period
+              }
+              close $fp
+            }
+            
+            # Create argument list for stat
+            set stat_libs ""
+            foreach lib $::env(DONT_USE_LIBS) {
+              append stat_libs "-liberty $lib "
+            }
+            
+            set constr [open $::env(OBJECTS_DIR)/abc.constr w]
+            puts $constr "set_driving_cell $::env(ABC_DRIVER_CELL)"
+            puts $constr "set_load $::env(ABC_LOAD_IN_FF)"
+            close $constr
+            
+            proc convert_liberty_areas {} {
+              cellmatch -derive_luts =A:liberty_cell
+              # find a reference nand2 gate
+              set found_cell ""
+              set found_cell_area ""
+              # iterate over all cells with a nand2 signature
+              foreach cell [tee -q -s result.string select -list-mod =*/a:lut=4'b0111 %m] {
+                if {! [rtlil::has_attr -mod $cell area]} {
+                  puts "Cell $cell missing area information"
+                  continue
+                }
+                set area [rtlil::get_attr -string -mod $cell area]
+                if {$found_cell == "" || [expr $area < $found_cell_area]} {
+                  set found_cell $cell
+                  set found_cell_area $area
+                }
+              }
+              if {$found_cell == ""} {
+                error "reference nand2 cell not found"
+              }
+            
+              # convert the area on all Liberty cells to a gate number equivalent
+              foreach box [tee -q -s result.string select -list-mod =A:area =A:liberty_cell %i] {
+                set area [rtlil::get_attr -mod -string $box area]
+                set gate_eq [expr int($area / $found_cell_area)]
+                rtlil::set_attr -mod -uint $box gate_cost_equivalent $gate_eq
+              }
+            }
 ###############################################################################################################################
 # ⬆️ End of inline synth_preamble.tcl                                                                                     ⬆️ #
 ###############################################################################################################################
