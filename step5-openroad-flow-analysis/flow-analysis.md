@@ -83,7 +83,7 @@
 # DESIGN_CONFIG=./designs/ihp-sg13g2/riscv32i/config.mk
 # DESIGN_CONFIG=./designs/ihp-sg13g2/i2c-gpio-expander/config.mk
 
-======================================================================== My  Note ========================================================================
+============================================================== My Note ==============================================================
 =    Uses the '?=' operator, which assigns a value to the variable                                                                                       =
 =    only if it hasn't already been defined.                                                                                                             =
 =    This is called conditional assignment.                                                                                                              =
