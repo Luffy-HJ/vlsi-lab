@@ -2068,7 +2068,11 @@ do-yosys: $(DONT_USE_SC_LIB)
                     }
                   }
                 }
-                
+
+======================================================================== My  Note ========================================================================
+=    'hold_margin' is a named parameter with a default value.                                                                                            =
+=    Tcl requires default-valued parameters to be wrapped in nested braces: { {param default} }                                                          =
+==========================================================================================================================================================
                 proc repair_timing_helper { {hold_margin 1} } {
                   set additional_args "-verbose"
                   append_env_var additional_args SETUP_SLACK_MARGIN -setup_margin 1
@@ -2160,9 +2164,19 @@ do-yosys: $(DONT_USE_SC_LIB)
                 }
                 
                 proc append_env_var {list_name var_name prefix has_arg} {
+
+======================================================================== My  Note ========================================================================
+=    Bind the variable named by the string in $list_name from the caller's scope to the local variable named 'list' in the current scope.                =
+=    This allows direct access and modification of the caller's variable within this procedure.                                                          =
+==========================================================================================================================================================
                   upvar $list_name list
                   if {(!$has_arg && [env_var_equals $var_name 1]) ||
                       ($has_arg && [env_var_exists_and_non_empty $var_name])} {
+
+======================================================================== My  Note ========================================================================
+=    Append the value of the variable 'prefix' to the end of the list variable 'list'.                                                                   =
+=    'lappend' modifies 'list' by adding the new element.                                                                                                =
+==========================================================================================================================================================
                     lappend list $prefix
                     if {$has_arg} {
                       lappend list $::env($var_name)
